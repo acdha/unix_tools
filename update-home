@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+import os
+from os.path import dirname, join, exists, samefile, realpath, islink, isdir
+import sys
+import shutil
+from filecmp import cmp
+
+def create_home_links(source_dir, target_dir, f_prefix=""):
+    target_dir = os.path.expanduser(target_dir)
+    
+    for f in os.listdir(source_dir):
+        source_file = join(source_dir, f)
+        target_file = join(target_dir, f_prefix + f)
+        
+        if exists(target_file) and isdir(target_file):
+            continue
+        
+        # Process:
+        #     1) If the file does not exist, link
+        #     2) If the file exists and is a link, check the target
+        #     3) If the file exists, check the target
+        
+        if exists(target_file):
+            if samefile(source_file, target_file):
+                continue
+            elif cmp(source_file, target_file, shallow=False):
+                print >>sys.stderr, "Replacing identical file %s with %s" % (target_file, source_file)
+                os.remove(target_file)
+            else:
+                print >>sys.stderr, "Skipping %s: %s already exists" % (source_file, target_file)
+                continue
+        
+        try:
+            os.symlink(source_file, target_file)
+        except OSError, e:
+            print >>sys.stderr, "Unable to symlink %s to %s: %s" % (source_file, target_file, e)
+            continue
+
+def main():
+    root = dirname(realpath(__file__))
+    os.chdir(root)
+    
+    create_home_links(join(root, "etc"), "~/", ".")
+    create_home_links(join(root, "bin"), "~/bin")
+
+    
+if __name__ == "__main__":
+    main()
