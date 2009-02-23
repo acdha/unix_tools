@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for b in $HOME/Library/Application\ Support/TextMate/Support/ $HOME/Library/Application\ Support/TextMate/Bundles/*.tmbundle; do 
+	echo $b;
+	svn update --quiet "$b"; 
+done

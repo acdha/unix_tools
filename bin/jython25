@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec java -jar ~/Library/Jython/2.5/jython.jar $@

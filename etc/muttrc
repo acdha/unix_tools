@@ -1,0 +1,40 @@
+set folder=imaps://mail.improbable.org/
+set postponed=imaps://mail.improbable.org/Drafts/
+set spoolfile=imaps://mail.improbable.org/
+
+set imap_force_ssl=yes
+set ssl_use_sslv2=no
+
+set mail_check=90
+set timeout=60
+
+set imap_user="acdha"
+set imap_idle=yes
+set imap_check_subscribed=yes
+
+set mbox=imaps://mail.improbable.org/Archive.`date +%Y.%m`/
+
+# Set From address intelligently:
+set realname="Chris Adams"
+set hidden_host=yes
+# Reply with the address the message was sent to:
+set reverse_name=yes
+
+# Don't include my address in the recipients list on a group reply:
+set metoo=no
+
+# Don't give "press any key to continue" after a pipe
+set wait_key=no
+
+# I receive mail at both of these:
+set alternates="cadams@salk\.edu|@improbable\.org"
+
+# Report spam messages to spamcop using S
+macro index S "| spamassassin -d | mail submit.v78SM8IGmzMjoYGc@spam.spamcop.net"
+macro pager S "| spamassassin -d | mail submit.v78SM8IGmzMjoYGc@spam.spamcop.net"
+# Report spam to spam assassin:
+macro index X "| spamassassin -r "
+macro pager X "| spamassassin -r "
+
+# Verify PGP/GPG signatures:
+set pgp_verify_sig=yes

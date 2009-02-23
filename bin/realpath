@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+import sys
+import os.path
+
+if len(sys.argv) <= 1:
+    print >>sys.stderr, "Usage: %s path1 path2 ..." % sys.argv[0]
+
+for p in sys.argv[1:]:
+    try:
+        print os.path.realpath(p)
+    except (OSError, IOError), e:
+        print >>sys.stderr, "Unable to process path %s: %s" % (p, e)

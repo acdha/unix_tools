@@ -1,0 +1,3 @@
+#!/bin/sh
+
+csstidy.bin "$1" --only_safe_optimisations=true --compress_colors=false --compress_font-weight=false --template=low_compression --sort_properties=true --discard_invalid_properties --save_comments=true --silent=true "$2"

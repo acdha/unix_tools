@@ -1,0 +1,23 @@
+# Functions used in this file:
+__vcs_name() {
+	if [ -d .svn ]; then 
+		echo " [svn]"; 
+	elif [ -d RCS ]; 	then 
+		echo " [RCS]";  
+	else
+		echo "$(__git_ps1 ' [git %s]')"
+	fi
+}
+
+PS1='\[\033]0;\u@\h:\w\007\]\u@\h:\w$(__vcs_name) $ '
+shopt -s histappend
+PROMPT_COMMAND='history -a'
+MANPATH=~/man:$MANPATH
+
+if [ -d ~/.bash_completion.d ]; then
+	for c in ~/.bash_completion.d/*; do
+		. "$c"
+	done
+fi
+
+source ~/.bashrc

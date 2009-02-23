@@ -1,0 +1,168 @@
+#!/usr/bin/env ruby
+
+# This script by Jesper <http://waffle.wootest.net/>.
+# It is placed in the public domain.
+
+def crapout_no_hpricot
+	puts "hpricot is required to run cssclean."
+	exit(-1)
+end
+
+begin
+	require 'rubygems'
+	begin
+		require 'hpricot'
+	rescue LoadError
+		crapout_no_hpricot
+	end
+rescue LoadError
+	begin
+		require 'hpricot'
+	rescue LoadError
+		crapout_no_hpricot
+	end
+end
+
+CSS_COMMENT_REGEX = /\/\*(.*?)\*\//m
+
+css_selectors = {}
+css_rules = []
+longest_selector = 0
+css_mode = true
+
+html_files_count = 0
+
+show_live_rules = false
+
+argv = []
+files = []
+ARGV.each do |file|
+	if file == '--show-live-rules'
+		show_live_rules = true
+		next
+	end
+	unless File.exists? file
+		next
+	end
+	files << file
+end
+if files.length == 1
+	argv = [files[0], '--', files[0]]
+end
+
+if files.empty?
+	puts "There were no files to process. Usage is as follows:"
+	puts
+	puts "    cssclean.rb [--show-live-rules] cssfile1[ cssfile2[ cssfileN]] -- htmlfile1[ htmlfile2[ htmlfileM]]"
+	puts "      - or as -"
+	puts "    cssclean.rb [--show-live-rules] singlefile"
+	puts
+	puts "Any CSS file or any HTML file including style elements (all style elements, regardless of the contents of the type attribute, will be processed) can be given for cssfile. Note that no CSS file imported through the @import CSS statement or the link HTML element are searched unless you specify them by hand. "
+	puts "When a single file is given, it will be evaluated as both the CSS file (by using the content in its style elements) and as the HTML file. "
+	exit
+end
+
+QUIET_ON_LIVE_RULES = !(show_live_rules)
+
+styles = []
+
+argv.each do |file|
+	if file == '--'
+	
+		styles.each do |c|	
+			rules = c.split '}'
+			
+			rules.each_with_index do |r,ix|
+				(sels, unused) = r.split('{', 2)
+				if sels.strip == ""
+					next
+				end
+				sls = sels.split(',')
+				cssrule = []
+				sls.each do |sel|
+					sel.strip!
+					if (sel.length > longest_selector)
+						longest_selector = sel.length
+					end
+					css_selectors[sel] = []
+					cssrule << sel
+				end
+				css_rules << cssrule
+			end
+		end
+	
+		css_mode = false
+		next
+	end
+
+	contents = File.read(file)
+	if (css_mode)
+		early = contents.gsub(CSS_COMMENT_REGEX, '')[0..1024].downcase
+		if early['<html'].nil? or early['<head'].nil? # if the first 1K (after stripped of comments) contains <html and <head, assume it's html (seems likely)
+			purecss = true
+		end
+				
+		unless purecss
+			doc = Hpricot(contents)
+			
+			csses = (doc/"style")
+			i = 0
+			csses.each do |css|
+				c = css.innerHTML
+				c.gsub!(CSS_COMMENT_REGEX, '')
+				styles << c
+			end
+		else
+			styles << contents.gsub(CSS_COMMENT_REGEX, '')
+		end
+	else
+		doc = Hpricot(contents)
+		
+		css_selectors.keys.each do |sel|
+			checksel = sel.gsub(/(:link|:visited|:active|:hover|:focus|:target|::first-line|::first-letter|::selection|::before|::after)/m, '') # remove any pseudo-class or pseudo-element Hpricot doesn't support so we don't flag them as unused
+      if (checksel != sel)
+        puts "sel: #{sel}, checksel: #{checksel}"
+      end
+			unless (doc/checksel).empty?
+				css_selectors[sel] << file
+			end
+		end
+		html_files_count += 1
+	end
+end
+
+puts "SELECTOR REPORT:"
+puts "----------------"
+css_selectors.each do |sel, matched|
+	prefix = "#{sel.ljust(longest_selector+2)}"
+	if matched.empty?
+		puts "#{prefix}DEAD"
+	else
+		unless QUIET_ON_LIVE_RULES
+			puts "#{prefix}Matches in:\n\t#{matched.join('\n\t')}"
+		end
+	end
+end
+
+puts
+puts "DEAD RULE REPORT:"
+puts "-----------------"
+deadrules = []
+css_rules.each do |rule|
+	matches = 0
+	rule.each do |sel|
+		matched = css_selectors[sel]
+		if matched.length > 0
+			matches+=1
+		end
+	end
+	if matches == 0
+		deadrules << rule
+	end
+end
+puts "#{deadrules.length} DEAD RULE#{deadrules.length == 1 ? '' : 'S'}"
+unless deadrules.empty?
+	deadrules.each do |rule|
+		puts "#{rule.join(', ')}"
+	end
+end
