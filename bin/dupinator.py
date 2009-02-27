@@ -15,7 +15,11 @@ filesBySize = {}
 def walker(arg, dirname, fnames):
     d = os.getcwd()
     os.chdir(dirname)
-
+    try:
+        fnames.remove('Thumbs')
+        fnames.remove('Previews')
+    except ValueError:
+        pass
     for f in fnames:
         if os.path.islink(f):
             continue
@@ -54,10 +58,14 @@ for x in directories:
     logging.info('Scanning "%s"' % x)
     os.path.walk(x, walker, filesBySize)
 
+print 'Finding potential dupes...'
 potentialDupes = []
 potentialCount = 0
 trueType = type(True)
-for size, inFiles in filesBySize.items():
+sizes = filesBySize.keys()
+sizes.sort()
+for k in sizes:
+    inFiles = filesBySize[k]
     outFiles = []
     hashes = {}
     if len(inFiles) == 1: continue

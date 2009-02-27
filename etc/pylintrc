@@ -82,7 +82,7 @@ variable-rgx=[a-z_][a-z0-9_]{2,30}$
 inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,k,v,f,e,Run,_
+good-names=i,j,k,v,f,exc,rc
 
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata,tmp
@@ -219,7 +219,7 @@ indent-string='    '
 # 
 [MISCELLANEOUS]
 # List of note tags to take in consideration, separated by a comma.
-notes=XXX
+notes=FIXME:,XXX,TODO:,BUG:
 
 
 # checks for similarities and duplicated code. This computation may be

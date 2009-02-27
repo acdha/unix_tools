@@ -1,6 +1,14 @@
 #!/bin/sh
 
 for b in $HOME/Library/Application\ Support/TextMate/Support/ $HOME/Library/Application\ Support/TextMate/Bundles/*.tmbundle; do 
-	echo $b;
-	svn update --quiet "$b"; 
+	if [ -d "$b/.svn" ]; then
+		svn update --quiet "$b" || ( echo "Unable to update $b" >&2; continue)
+	elif [ -d "$b/.git" ]; then
+		(pushd "$b" && git pull -q && popd) || ( echo "Unable to update $b" >&2; continue)
+	else
+		echo "Skipping $b: unknown update mechanism!" >&2
+		continue
+	fi
+	
+	echo "Updated $b";
 done
