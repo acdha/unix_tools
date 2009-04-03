@@ -1,0 +1,123 @@
+#!/usr/bin/perl -w
+
+use Mail::Box::Manager;
+use Mail::Box::IMAP4;
+use Data::Dumper;
+use Getopt::Long;
+use strict;
+
+sub get_password(\%) {
+  my $ServerInfo = shift;
+
+  unless ( $ServerInfo->{"Password"} ) {
+    system "stty -echo";
+    print STDERR "Please enter the password for " . $ServerInfo->{"Username"} . "@" . $ServerInfo->{"Server"} . ": ";
+    chomp( $ServerInfo->{"Password"} = <STDIN> );
+    print STDERR "\n";
+    system "stty echo";
+  }
+}
+
+sub urlencode($) {
+  my $s = shift;
+  $s =~ s/([^\w\-\.\@])/$1 eq " "?"+":sprintf("%%%2.2x",ord($1))/eg;
+  return $s;
+}
+
+my %SourceInfo = (
+  'Username' => 'chris@improbable.org',
+  'Password' => 'password',
+  'Server'   => 'mail.example.com'
+);
+
+my %DestinationInfo = (
+  'Username' => 'chris@improbable.org',
+  'Password' => 'password',
+  'Server'   => 'mail.example.org'
+);
+
+my $Verbosity = 0;
+
+Getopt::Long::Configure("bundling");    # Allow single-dash options to be groups: -vvvv = -v -v -v -v
+GetOptions( 'v|verbose+' => \$Verbosity, );
+
+if ( $Verbosity > 2 ) {
+  Mail::Reporter->defaultTrace( 'NOTICE', 'NOTICE' );
+} elsif ( $Verbosity > 3 ) {
+  Mail::Reporter->defaultTrace( 'DEBUG', 'DEBUG' );
+}
+
+get_password(%SourceInfo);
+get_password(%DestinationInfo);
+
+my $SourceBaseURL =
+    'imap4://'
+  . urlencode( $SourceInfo{"Username"} ) . ":"
+  . urlencode( $SourceInfo{"Password"} ) . "@"
+  . urlencode( $SourceInfo{"Server"} ) . '/';
+
+my $SourceManager = new Mail::Box::Manager(
+  default_folder_type => 'imap4',
+  access              => 'r',
+  log                 => 'DEBUG',
+  trace               => 'DEBUG',
+  access              => 'r',
+);
+
+my $DestinationManager = new Mail::Box::Manager(
+  default_folder_type => 'imap4',
+  access              => 'r',
+  log                 => 'DEBUG',
+  trace               => 'DEBUG',
+  access              => 'rw'
+);
+
+print "Opening source mailbox\n" if $Verbosity;
+my $SourceInbox = $SourceManager->open(
+  folder      => 'INBOX.Spam',
+  username    => $SourceInfo{"Username"},
+  password    => $SourceInfo{"Password"},
+  server_name => $SourceInfo{"Server"}
+) or die("Couldn't open IMAP source inbox: $!");
+
+print "Opening destination mailbox\n" if $Verbosity;
+my $DestinationInbox = $DestinationManager->open(
+  folder      => 'INBOX.Spam',
+  username    => $DestinationInfo{"Username"},
+  password    => $DestinationInfo{"Password"},
+  server_name => $DestinationInfo{"Server"},
+  access      => 'rw'
+) or die("Couldn't open IMAP destination inbox: $!");
+
+print "Copying INBOX...\n" if $Verbosity;
+
+$SourceInbox->copyTo($DestinationInbox);
+
+$SourceInbox->close();
+$DestinationInbox->close();
+
+print "Copying subfolders...\n" if $Verbosity;
+
+foreach my $SourceSubName ( $SourceInbox->listSubFolders() ) {
+  print "Processing $SourceSubName\n" if $Verbosity;
+
+  print "Opening source folder\n" if $Verbosity > 1;
+  my $SourceSub = $SourceManager->open($SourceSubName) or die("Couldn't open source $SourceSubName: $!\n");
+  print "Opening destination folder\n" if $Verbosity > 1;
+  my $DestinationSub = $DestinationInbox->openSubFolder( $SourceSubName, create => 1 )
+    or die("Couldn't open destination $SourceSubName: $!\n");
+
+  #$SourceSub->copyTo($DestinationSub);
+  print "Copying messages" if $Verbosity > 1;
+  foreach ( $SourceSub->messages ) {
+    $_->copyTo($DestinationSub);
+    print ".";
+  }
+  print "\n";
+}
+
+print "Closing destination mailbox\n" if $Verbosity;
+$DestinationInbox->close();
+
+print "Closing source mailbox\n" if $Verbosity;
+$SourceInbox->close();
