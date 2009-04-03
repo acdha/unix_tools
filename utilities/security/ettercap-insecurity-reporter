@@ -1,0 +1,218 @@
+#!/usr/bin/perl -w
+
+use Net::DNS;
+use Data::Dumper;
+use IO::Select;
+use Getopt::Long;
+use strict;
+
+my $DNSTimeout   = 120;
+my $Verbosity    = 0;
+my $OutputFormat = "text";
+
+Getopt::Long::Configure("bundling");    # Allow single-dash options to be groups: -vvvv = -v -v -v -v
+GetOptions(
+  'dns-timeout=i'          => \$DNSTimeout,
+  'format|output-format=s' => \$OutputFormat,
+  'verbose=i'              => \$Verbosity,
+  'v+'                     => \$Verbosity
+);
+
+$OutputFormat =~ tr/A-Z/a-z/;
+
+my $DNS               = Net::DNS::Resolver->new;
+my $BackgroundQueries = IO::Select->new();
+my %Connections;
+my %Servers;
+my %Hosts;
+my %PendingHosts;
+my $LastServer;
+my $LastClient;
+my $LastService;
+my $LastPort;
+sub urlencode($);
+
+print STDERR "Setting DNS timeout to $DNSTimeout seconds\n" if $Verbosity > 2;
+$DNS->tcp_timeout($DNSTimeout);
+$DNS->udp_timeout($DNSTimeout);
+
+if ( $Verbosity > 5 ) {
+  $DNS->debug(1);
+}
+
+while (<>) {
+  chomp;
+  next unless $_;
+
+  if (m/^[\d:]+\s+([.0-9]+):\d+[\s<>-]+([\d.]+):(\d+)\s+(\S+)/) {
+    $Servers{$2}++;
+
+    $LastClient  = $1;
+    $LastServer  = $2;
+    $LastPort    = $3;
+    $LastService = $4;
+
+    # Start DNS resolution process to convert IP to name:
+    if ( !exists( $Hosts{$2} ) ) {
+      print STDERR "Starting DNS lookup for $2...\n" if $Verbosity > 2;
+      $Hosts{$2} = $2;
+      $BackgroundQueries->add( $DNS->bgsend($2) );
+    }
+  } elsif (m/^USER:\s+(\S*)\s*$/) {
+    my $User = $1 ? urlencode($1) . '@' : "";
+    $LastService =~ s/netbios-ssn/smb/;    #TODO: add a proper lookup table
+    $Connections{"$LastService://$User$LastServer:$LastPort"}++;
+    undef $LastServer;
+    undef $LastClient;
+    undef $LastService;
+    undef $LastPort;
+  } else {
+    print STDERR "Unrecognized line: $_" if $Verbosity > 3;
+  }
+
+  # Do a quick non-blocking check to see if any background DNS requests have completed:
+  if ( my @pending_queries = $BackgroundQueries->can_read(0) ) {
+    print STDERR "Processing " . scalar(@pending_queries) . " new DNS replies\n" if $Verbosity > 4;
+    foreach (@pending_queries) {
+      process_background_query($_);
+    }
+  }
+
+}
+
+print STDERR "Log file scan complete - found " . scalar( keys(%Connections) ) . " distinct host:service pairs\n" if $Verbosity;
+
+my $BackgroundResolutionStart = time();
+while ( $BackgroundQueries->count() ) {
+  print STDERR "Waiting for " . $BackgroundQueries->count() . " DNS queries to complete...\n" if $Verbosity;
+
+  if ( my @exceptions = $BackgroundQueries->has_exception(0) ) {
+    print STDERR "Processing " . scalar(@exceptions) . " exceptions\n" if $Verbosity > 2;
+    foreach (@exceptions) {
+      print STDERR Dumper($_);
+      $BackgroundQueries->remove($_);
+    }
+    print STDERR "... processed " . scalar(@exceptions) . " exceptions\n" if $Verbosity > 2;
+  }
+
+  # Process any remaining queries with a timeout to avoid polling:
+  if ( my @pending_queries = $BackgroundQueries->can_read(3) ) {
+    print STDERR "Processing " . scalar(@pending_queries) . " new DNS replies:\n" if $Verbosity > 4;
+    foreach (@pending_queries) {
+      process_background_query($_);
+    }
+    print STDERR "... processed " . scalar(@pending_queries) . " replies\n" if $Verbosity > 4;
+  }
+
+  if ( time() - $BackgroundResolutionStart > $DNSTimeout ) {
+    print STDERR "DNS timeout exceeded\n";
+    $BackgroundQueries->remove( $BackgroundQueries->handles );
+  }
+}
+
+if ( keys(%PendingHosts) ) {
+  print STDERR "Reverse DNS for the following addresses could not be verified:\n";
+  foreach ( sort( keys(%PendingHosts) ) ) {
+    print STDERR "\t" . $PendingHosts{$_} . " is allegedly $_ \n";
+  }
+  print STDERR "\n";
+}
+
+eval "output_$OutputFormat()";
+warn $@ if $@;
+
+sub output_text {
+  print '-' x 80, "\nPopular Servers\n", '-' x 80, "\n";
+  foreach my $IP ( sort( { $Servers{$b} <=> $Servers{$a} } keys(%Servers) ) ) {
+    printf( "%-70s %9d\n", $Hosts{$IP}, $Servers{$IP} );
+  }
+
+  print "\n", '-' x 80, "\n";
+
+  print "Popular Connections\n", '-' x 80, "\n";
+  foreach my $URL ( sort( { $Connections{$b} <=> $Connections{$a} } keys(%Connections) ) ) {
+    ( my $PrettyURL = $URL ) =~ s|(?<=@)([\d.]+)|$Hosts{$1}|e;
+    printf( "%-70s %9d\n", $PrettyURL, $Connections{$URL} );
+  }
+}
+
+sub output_html {
+  print "<html>\n";
+
+  print "\t<head>\n";
+  print "\t\t<title>Ettercap Insecurity Report</title>\n";
+
+  # print "\t\t<style>a { text-decoration: none; color: black; }</style>\n";
+  print "\t</head>\n";
+
+  print "\t<body>\n";
+  output_html_table();
+  print "\t</body>\n</html>\n";
+}
+
+sub output_html_table {
+  print "\t\t<table class=\"EttercapInsecurityReport\">\n";
+  printf "\t\t\t<caption>%d insecure connections to %d hosts</caption>\n", scalar( keys(%Connections) ), scalar( keys(%Servers) );
+
+  print "\t\t\t<tr><th colspan=\"2\">Popular Servers</th></tr>\n";
+
+  foreach my $IP ( sort( { $Servers{$b} <=> $Servers{$a} } keys(%Servers) ) ) {
+    printf( "\t\t\t<tr><td>%s</td><td>%s</td></tr>\n", $Hosts{$IP}, $Servers{$IP} );
+  }
+
+  print "\t\t\t<tr><th colspan=\"2\">Popular Connections</th></tr>\n";
+
+  foreach my $URL ( sort( { $Connections{$b} <=> $Connections{$a} } keys(%Connections) ) ) {
+    ( my $PrettyURL = $URL ) =~ s|(?<=@)([\d.]+)|$Hosts{$1}|e;
+    printf( "\t\t\t<tr><td><a href=\"%s\">%s</a></td><td>%s</td></tr>\n", $PrettyURL, $PrettyURL, $Connections{$URL} );
+  }
+  print "\t\t</table>\n";
+}
+
+sub process_background_query {
+  my $sock = shift or die("resolve_host called without a parameter");
+
+  print STDERR "Processing background query\n" if $Verbosity > 5;
+
+  my $packet = $DNS->bgread($sock);
+
+  foreach my $rr ( $packet->answer ) {
+
+    # If we got a PTR that means our first reverse check is back.
+    # We add IP -> Name into PendingHosts and start the forward check.
+    # If we got an A that means one of our forward checks worked; if the
+    # forward Name -> IP doesn't match, something fishy is going on.
+
+    if ( $rr->type eq "A" ) {
+      print STDERR "A: " . $rr->name . " = " . $rr->address . "\n" if $Verbosity > 3;
+      if ( !exists( $PendingHosts{ $rr->name } ) ) {
+        print STDERR "Received an A record for an address which we don't have on file: ", $rr->name, "\n";
+      } elsif ( $PendingHosts{ $rr->name } ne $rr->address ) {
+        printf( STDERR "Reverse DNS discrepancy: %s resolves to %s (expected %s)\n",
+          $rr->name, $rr->address, $PendingHosts{ $rr->name } );
+
+        delete $PendingHosts{ $rr->name };
+
+      } else {
+        $Hosts{ $rr->address } = $rr->name;
+        delete $PendingHosts{ $rr->name };
+      }
+    } elsif ( $rr->type eq "PTR" ) {
+      ( my $Address = $rr->name ) =~ s/^(\d{1,3}).(\d{1,3}).(\d{1,3}).(\d{1,3}).*/$4.$3.$2.$1/;
+
+      print STDERR "PTR: " . $rr->ptrdname . " = " . $Address . "\n" if $Verbosity > 3;
+      $PendingHosts{ $rr->ptrdname } = $Address;
+      $BackgroundQueries->add( $DNS->bgsend( $rr->ptrdname ) );    # Start verification process
+    } else {
+      print STDERR "Received unknown response:\n\t", $rr->string, "\n";
+    }
+  }
+
+  $BackgroundQueries->remove($sock);
+}
+
+sub urlencode($) {
+  my $s = shift;
+  $s =~ s/([^\w\-\.])/$1 eq " "?"+":sprintf("%%%2.2x",ord($1))/eg;
+  return $s;
+}
