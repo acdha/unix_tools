@@ -1,0 +1,80 @@
+#!/usr/bin/perl -w
+
+use File::Find;
+use Getopt::Long;
+use File::stat;
+use strict;
+
+sub find_files;
+
+my $Verbosity = 0;
+my %LimitUIDs;
+my %LimitGIDs;
+my $NewGroup;
+
+Getopt::Long::Configure("bundling");    # Allow single-dash options to be groups: -vvvv = -v -v -v -v
+GetOptions(
+  'v|verbose+'    => \$Verbosity,
+  'limit-users=s' => sub {
+    foreach my $u ( split /,/, $_[1] ) {
+      my $uid = getpwnam($u);
+      die("Couldn't get UID for user '$u': $!\n") unless defined $uid;
+      $LimitUIDs{$uid} = $uid;
+    }
+  },
+  'limit-groups=s' => sub {
+    foreach my $g ( split /,/, $_[1] ) {
+      my $gid = getgrnam($g);
+      die("Couldn't get GID for the '$g' group: $!\n") unless defined $gid;
+      $LimitGIDs{$gid} = $gid;
+    }
+  }
+);
+
+die("chgrp with filtering\n\nUsage: $0 [-v] [--limit-users=user1,user2,user3...] [--limit-groups=group1,group2,...] group path\n")
+  unless @ARGV >= 2;
+
+$NewGroup = shift(@ARGV);
+
+unless ( $NewGroup =~ /^\d+$/ ) {
+  $NewGroup = getgrnam($NewGroup) or die("Couldn't get the GID for the '$NewGroup' group: $!\n");
+}
+
+if ( $Verbosity > 2 ) {
+  print "Updating file permissions on the following paths:\n";
+  print "\t", join( "\n\t", @ARGV ), "\n";
+  print "New group: $NewGroup\n";
+
+  if ( scalar %LimitUIDs ) {
+    print "Only files owned by these users will be changed:\n";
+    print "\t", join( " ", %LimitUIDs ), "\n";
+  }
+
+  if ( scalar %LimitGIDs ) {
+    print "Only files owned by these groups will be changed:\n";
+    print "\t", join( " ", %LimitGIDs ), "\n";
+  }
+}
+
+foreach (@ARGV) {
+  find( { wanted => \&find_files, no_chdir => 1 }, -l $_ ? readlink($_) : $_ );
+}
+
+sub find_files {
+  my $st = stat($_);
+  print "Checking $_...\n" if $Verbosity > 3;
+
+  if ( keys %LimitUIDs ) {
+    return unless $LimitUIDs{ $st->uid };
+    print "$_: ", $st->uid, " is in our target UID list\n" if $Verbosity > 3;
+  }
+  if ( keys %LimitGIDs ) {
+    return unless $LimitGIDs{ $st->gid };
+    print "$_: ", $st->gid, " is in our target GID list\n" if $Verbosity > 3;
+  }
+
+  if ( $st->gid ne $NewGroup ) {
+    print "$_: changing gid from ", $st->gid, " to $NewGroup...\n" if $Verbosity;
+    chown( $st->uid, $NewGroup, $_ ) or die( "Couldn't change gid for $_ from ", $st->gid, " to $NewGroup: $!\n" );
+  }
+}

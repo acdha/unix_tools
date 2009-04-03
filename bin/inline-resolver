@@ -1,0 +1,71 @@
+#!/usr/bin/perl -w
+
+use Socket;
+use Getopt::Long;
+use Pod::Usage;
+
+my $ReplaceOriginal = 0;
+my $Verbosity       = 0;
+
+Getopt::Long::Configure("bundling");    # Allow single-dash options to be groups: -vvvv = -v -v -v -v
+GetOptions(
+  'verbose=i' => \$Verbosity,
+  'v+'        => \$Verbosity,
+  'replace'   => \$ReplaceOriginal,
+  'help'      => sub { pod2usage( verbose => 2 ) }
+);
+
+sub reverse_lookup {
+  $addr = shift;
+
+  if ( $host = gethostbyaddr( inet_aton($addr), AF_INET ) ) {
+    return $ReplaceOriginal ? $host : "$addr ($host)";
+  } else {
+    return $addr;
+  }
+}
+
+while (<>) {
+
+  # Resolve any IP address in the input:
+  s/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/reverse_lookup($1)/eg;
+  print;
+}
+
+__END__
+
+=head1 inline-resolver
+
+inline-resolver - a filter which performs reverse-DNS lookups on IP addresses
+
+=head1 SYNOPSIS
+
+inline-resolver [-v] [--replace] < file.log
+
+=head1 DESCRIPTION
+
+B<inline-resolver> will read input and output it with any IP addresses replaced
+with "Address (Hostname)".
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--help>
+
+Print a brief help message and exits.
+
+=item B<-v>
+
+Increase the amount of information displayed during processing. Use multiple
+times for greater effect.
+
+=item B<--replace>
+
+IP addresses found in the input stream will not be included in the output
+stream, rather than being included with the hostname in parentheses.
+
+=back
+
+=cut
+

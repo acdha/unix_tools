@@ -1,0 +1,63 @@
+#!/usr/bin/perl -w
+#
+# This software is licensed under the CC-GNU GPL: http://creativecommons.org/licenses/GPL/2.0/
+
+use Image::ExifTool;
+use Data::Dumper;
+use Time::Local;
+use strict;
+
+unless ( scalar(@ARGV) > 0 ) {
+  die("Set file times based on embedded EXIF data\n\nUsage: exif-touch file file2 file3 ...\n");
+}
+
+my $exif = new Image::ExifTool;
+$exif->Options( Group0 => ['EXIF'] );
+
+foreach my $file (@ARGV) {
+  if ( !-f $file ) {
+    warn("Couldn't read $file: $!\n");
+    next;
+  }
+
+  my $image = $exif->ImageInfo($file);
+
+  unless ($image) {
+    warn("Couldn't load $file: $!\n");
+    next;
+  }
+
+  unless ( $image->{CreateDate} ) {
+    warn("Skipping $file: EXIF CreateDate is not set\n");
+    next;
+  }
+
+  if ( $image->{CreateDate} eq '0000:00:00 00:00:00' ) {
+    warn("Skipping $file: EXIF CreateDate is set to 0000:00:00 00:00:00\n");
+    next;
+  }
+
+  # Sanity check the values returned:
+  my @tm = ( $image->{CreateDate} =~ /^(\d{4}):(\d{2}):(\d{2})\s+(\d{2}):(\d{2}):(\d{2})/ );
+  unless ( scalar @tm eq 6 ) {
+    warn( "$file: EXIF CreateDate is malformed (", $image->{CreateDate}, ")\n" );
+    print "-" x 78, "\n";
+    print "EXIF Data Dump:\n";
+    print "-" x 78, "\n";
+    print Dumper( \$image );
+    print "-" x 78, "\n";
+    next;
+  }
+
+  $tm[1] -= 1;    # timelocal expects the month to be zero-indexed (those wacky programmers)
+  @tm = reverse @tm;    # change to order required by timelocal()
+
+  my $exif_date = timelocal(@tm);
+
+  unless ($exif_date) {
+    warn("$_: Couldn't read EXIF date!\n");
+    next;
+  }
+
+  utime( $exif_date, $exif_date, $file );
+}

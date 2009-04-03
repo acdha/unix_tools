@@ -1,0 +1,42 @@
+#!/usr/bin/perl -w
+
+use File::Find;
+use File::stat;
+use Getopt::Long;
+use strict;
+
+sub find_files;
+
+my $Verbosity = 0;
+my $TimeField = 'mtime';
+my $Now       = time();
+
+Getopt::Long::Configure("bundling");    # Allow single-dash options to be groups: -vvvv = -v -v -v -v
+GetOptions(
+  'v|verbose+' => \$Verbosity,
+  'time=s'     => \$TimeField,
+);
+
+die("Usage: $0 [-v] path\n") unless @ARGV >= 1;
+
+die("--time must be one of mtime, ctime or atime") unless $TimeField =~ /^[acm]time$/;
+
+my %Days;                               # Key = time_t % 86400; value = total bytes
+
+foreach (@ARGV) {
+  print "Tallying files in $_...\n" if $Verbosity;
+  find( { wanted => \&find_files, no_chdir => 1 }, -l $_ ? readlink($_) : $_ );
+}
+
+printf "%6s %8s %10s\n", "Age", "MB", "Total MB";
+my $Total = 0;
+foreach ( sort { $a <=> $b } keys %Days ) {
+  $Total += $Days{$_};
+  printf "%6d %8.1f %10.1f\n", $_, $Days{$_} / 1048576, $Total / 1048576;
+}
+
+sub find_files {
+  return unless -f;
+  print "Tallying $_\n" if $Verbosity > 2;
+  $Days{ int( ( $Now - stat($_)->$TimeField ) / 86400 ) } += -s $File::Find::name;
+}
