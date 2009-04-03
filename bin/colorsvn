@@ -21,7 +21,7 @@
 # Note:
 #
 # colorsvn will only emit color codes if:
-# 
+#
 #    (1) tts STDOUT is a tty.
 #    (2) the value of $TERM is not listed in the "nocolor" option.
 #    (3) the svn command is not a commit or import (as the text editor
@@ -52,73 +52,65 @@
 use Term::ANSIColor;
 use IPC::Open3;
 
-sub initDefaults
-{
-	$svnPath = "/usr/bin/svn";
+sub initDefaults {
+  $svnPath = "/usr/bin/svn";
 
-	$nocolor{"dumb"} = "true";
+  $nocolor{"dumb"} = "true";
 
-	$colors{"P"} = color("reset");
-	$colors{"U"} = color("reset");
-	$colors{" "} = color("reset");
-	$colors{"C"} = color("bold red");
-	$colors{"M"} = color("bold yellow");
-	$colors{'G'} = color("bold yellow");
-	$colors{"A"} = color("cyan");
-	$colors{"R"} = color("cyan");
-	$colors{"D"} = color("red");
-	$colors{"I"} = color("bold");
-	$colors{"?"} = color("bold");
-	$colors{"!"} = color("bold");
-	$colors{"~"} = color("bold red");
-	$colors{"server"} = color("bold green");
-	$colors{"warning"} = color("bold cyan");
+  $colors{"P"}       = color("reset");
+  $colors{"U"}       = color("reset");
+  $colors{" "}       = color("reset");
+  $colors{"C"}       = color("bold red");
+  $colors{"M"}       = color("bold yellow");
+  $colors{'G'}       = color("bold yellow");
+  $colors{"A"}       = color("cyan");
+  $colors{"R"}       = color("cyan");
+  $colors{"D"}       = color("red");
+  $colors{"I"}       = color("bold");
+  $colors{"?"}       = color("bold");
+  $colors{"!"}       = color("bold");
+  $colors{"~"}       = color("bold red");
+  $colors{"server"}  = color("bold green");
+  $colors{"warning"} = color("bold cyan");
 
-	# Applies when only the properties changed
-	$propcolors{"C"} = color("bold red");
-	$propcolors{"M"} = color("yellow");
+  # Applies when only the properties changed
+  $propcolors{"C"} = color("bold red");
+  $propcolors{"M"} = color("yellow");
 }
 
-sub loadPreferences
-{
-# Usage: loadPreferences("filename");
+sub loadPreferences {
 
-	my($filename) = @_;
+  # Usage: loadPreferences("filename");
 
-	open(PREFS, "<$filename") || return;
+  my ($filename) = @_;
 
-	while(<PREFS>)
-	{
-		next if (m/^\#.*/);          # It's a comment.
-		next if (!m/(.*):\s*(.*)/);  # It's not of the form "foo: bar".
+  open( PREFS, "<$filename" ) || return;
 
-		$option = $1;
-		$value = $2;
+  while (<PREFS>) {
+    next if (m/^\#.*/);              # It's a comment.
+    next if ( !m/(.*):\s*(.*)/ );    # It's not of the form "foo: bar".
 
-		if ($option =~ /svn/)
-		{
-			$svnPath = $value;
-		}
-		elsif ($option eq "nocolor")
-		{
-			# The nocolor option lists terminal types, separated by
-			# spaces, not to do color on.
-			foreach $termtype (split(/\s+/, $value))
-			{
-				$nocolor{$termtype} = "true";
-			}
-		}
-		elsif ($option =~ /prop (.)/)
-		{
-		        # Property color
-		        $propcolors{$1} = color($value);
-		}
-		else
-		{
-			$colors{$option} = color($value);
-		}
-	}
-	close(PREFS);
+    $option = $1;
+    $value  = $2;
+
+    if ( $option =~ /svn/ ) {
+      $svnPath = $value;
+    } elsif ( $option eq "nocolor" ) {
+
+      # The nocolor option lists terminal types, separated by
+      # spaces, not to do color on.
+      foreach $termtype ( split( /\s+/, $value ) ) {
+        $nocolor{$termtype} = "true";
+      }
+    } elsif ( $option =~ /prop (.)/ ) {
+
+      # Property color
+      $propcolors{$1} = color($value);
+    } else {
+      $colors{$option} = color($value);
+    }
+  }
+  close(PREFS);
 }
 
 #
@@ -130,72 +122,62 @@ initDefaults();
 
 # Read the configuration file, if there is one.
 $configFile = $ENV{"HOME"} . "/.colorsvnrc";
-if (-f $configFile)
-{
-	loadPreferences($configFile);
+if ( -f $configFile ) {
+  loadPreferences($configFile);
 }
 
-# Get the terminal type. 
+# Get the terminal type.
 $terminal = $ENV{"TERM"} || "dumb";
 
 $commit = 0;
-foreach (@ARGV)
-{
-	if(/^ci$/ || /^commit$/ || /^import$/ || /^prop/ || /^p[delsg]$/)
-	{
-		$commit = 1;
-		break;
-	}
-	elsif (! /^-/)
-	{
-		break;
-	}
+foreach (@ARGV) {
+  if ( /^ci$/ || /^commit$/ || /^import$/ || /^prop/ || /^p[delsg]$/ ) {
+    $commit = 1;
+    break;
+  } elsif ( !/^-/ ) {
+    break;
+  }
 }
 
 # If it's in the list of terminal types not to color, or if
 # we're writing to something that's not a tty, don't do color.
-if (! -t STDOUT || $commit == 1 || $nocolor{$terminal})
-{
-	exec $svnPath, @ARGV
-		or die("Couldn't exec");
+if ( !-t STDOUT || $commit == 1 || $nocolor{$terminal} ) {
+  exec $svnPath, @ARGV
+    or die("Couldn't exec");
 }
 
--f $svnPath or die ("$svnPath not found, add svn: /full/path/to/svn to ~/.colorsvnrc");
+-f $svnPath or die("$svnPath not found, add svn: /full/path/to/svn to ~/.colorsvnrc");
 
 # Keep the pid of the svn process so we can get its return
 # code and use that as our return code.
-$svn_pid = open3('<&STDIN', \*SVNOUT, \*SVNOUT, $svnPath, @ARGV);
+$svn_pid = open3( '<&STDIN', \*SVNOUT, \*SVNOUT, $svnPath, @ARGV );
 $svnName = $svnPath;
 $svnName =~ s,.*/(.*)$,\1,;
 
 # Colorize the output from the svn program.
-while(<SVNOUT>)
-{
-	chomp;
-	if (m/^ (.).+/) # Property changed only
-	{
-	        print($propcolors{$1}, $_, color("reset"));
-	}
-	elsif (m/^(.).+/) # S filename
-	{
-		print($colors{$1}, $_, color("reset"));
-	}
-	elsif (m/warning:/) # warning
-	{
-		print($colors{"warning"}, $_, color("reset"));
-	}
-	elsif (m/^$svnName[^:]*: / || m/^svn server: /) # server message
-	{
-		print($colors{"server"}, $_, color("reset"));
-	}
-	else # Anything else
-	{
-		# Print normally.
-		print(color("reset"), $_);
-	}
-	print "\n";
+while (<SVNOUT>) {
+  chomp;
+  if (m/^ (.).+/)    # Property changed only
+  {
+    print( $propcolors{$1}, $_, color("reset") );
+  } elsif (m/^(.).+/)    # S filename
+  {
+    print( $colors{$1}, $_, color("reset") );
+  } elsif (m/warning:/)    # warning
+  {
+    print( $colors{"warning"}, $_, color("reset") );
+  } elsif ( m/^$svnName[^:]*: / || m/^svn server: / )    # server message
+  {
+    print( $colors{"server"}, $_, color("reset") );
+  } else                                                 # Anything else
+  {
+
+    # Print normally.
+    print( color("reset"), $_ );
+  }
+  print "\n";
 }
 
 # Get the return code of the svn program and exit with that.
-waitpid($svn_pid, 0);
-exit ($? >> 8);
+waitpid( $svn_pid, 0 );
+exit( $? >> 8 );
