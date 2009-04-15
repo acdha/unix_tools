@@ -5,22 +5,27 @@ from os.path import dirname, join, exists, samefile, realpath, islink, isdir
 import sys
 import shutil
 from filecmp import cmp
+import subprocess
 
 def create_home_links(source_dir, target_dir, f_prefix=""):
     target_dir = os.path.expanduser(target_dir)
-    
+
+    if not os.path.exists(target_dir):
+        print "Creating %s" % target_dir
+        os.mkdir(target_dir)
+
     for f in os.listdir(source_dir):
         source_file = join(source_dir, f)
         target_file = join(target_dir, f_prefix + f)
-        
+
         if exists(target_file) and isdir(target_file):
             continue
-        
+
         # Process:
         #     1) If the file does not exist, link
         #     2) If the file exists and is a link, check the target
         #     3) If the file exists, check the target
-        
+
         if exists(target_file):
             if samefile(source_file, target_file):
                 continue
@@ -30,20 +35,38 @@ def create_home_links(source_dir, target_dir, f_prefix=""):
             else:
                 print >>sys.stderr, "Skipping %s: %s already exists" % (source_file, target_file)
                 continue
-        
+
         try:
             os.symlink(source_file, target_file)
         except OSError, e:
             print >>sys.stderr, "Unable to symlink %s to %s: %s" % (source_file, target_file, e)
             continue
 
+def check_gitconfig():
+    gitconfig = os.path.expanduser("~/.gitconfig")
+    if os.path.exists(gitconfig):
+        devnull = open("/dev/null", "w")
+        rc = subprocess.call(["git", "config", "--global", "github.token"], stdout=devnull)
+
+        if rc == 0:
+            return
+
+        if not sys.stdin.isatty():
+            print >>sys.stderr, "WARNING: This doesn't appear to be a terminal - please run git config to set the github token!"
+        else:
+            import getpass
+            token = getpass.getpass("Github token: ")
+            subprocess.check_call(["git", "config", "--global", "github.token", token])
+
+
 def main():
     root = dirname(realpath(__file__))
     os.chdir(root)
-    
+
     create_home_links(join(root, "etc"), "~/", ".")
     create_home_links(join(root, "bin"), "~/bin")
 
-    
+    check_gitconfig()
+
 if __name__ == "__main__":
     main()
