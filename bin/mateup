@@ -4,7 +4,9 @@ for b in $HOME/Library/Application\ Support/TextMate/Support/ $HOME/Library/Appl
 	if [ -d "$b/.svn" ]; then
 		svn update --quiet "$b" || ( echo "Unable to update $b" >&2; continue)
 	elif [ -d "$b/.git" ]; then
-		(pushd "$b" && git pull -q && popd) || ( echo "Unable to update $b" >&2; continue)
+		(pushd "$b" && git pull -q -ff && popd) || ( echo "Unable to update $b" >&2; continue)
+	elif [ -d "$b/.hg" ]; then
+		(pushd "$b" && hg pull -u && popd) || ( echo "Unable to update $b" >&2; continue)
 	else
 		echo "Skipping $b: unknown update mechanism!" >&2
 		continue
