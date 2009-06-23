@@ -38,4 +38,12 @@ if [ -d ~/.bash_completion.d ]; then
 	done
 fi
 
+if [ -f /etc/bashrc ]; then
+    . /etc/bashrc
+fi
+
 source ~/.bashrc
+
+if [ -f ~/.bashrc.local ]; then
+    . ~/.bashrc.local
+fi

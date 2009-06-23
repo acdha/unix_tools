@@ -53,7 +53,8 @@ use Term::ANSIColor;
 use IPC::Open3;
 
 sub initDefaults {
-  $svnPath = "/usr/bin/svn";
+  $svnPath = `which svn`;
+  chomp($svnPath);
 
   $nocolor{"dumb"} = "true";
 
