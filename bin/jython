@@ -1,10 +1,1 @@
-#!/bin/sh
-
-if [ -z "$ORACLE_HOME" ]; then
-  echo "Your ORACLE_HOME has not been defined. Do you need to run oraenv?"
-  exit 1
-fi
-
-export CLASSPATH="$ORACLE_HOME/ojdbc5.jar:$CLASSPATH"
-
-exec java -jar ~/Library/Jython/2.2/jython.jar $@
+/Users/chris/Development/jython2.5/bin/jython
