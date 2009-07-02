@@ -32,6 +32,11 @@ shopt -s histappend
 PROMPT_COMMAND='history -a'
 MANPATH=~/man:$MANPATH
 
+if [ -f /usr/local/bin/virtualenvwrapper_bashrc ]; then
+    export WORKON_HOME=$HOME/.virtualenvs
+    . /usr/local/bin/virtualenvwrapper_bashrc
+fi
+
 if [ -d ~/.bash_completion.d ]; then
 	for c in ~/.bash_completion.d/*; do
 		. "$c"
@@ -46,4 +51,8 @@ source ~/.bashrc
 
 if [ -f ~/.bashrc.local ]; then
     . ~/.bashrc.local
+fi
+
+if [ -f ~/.pythonstartup ]; then
+    export PYTHONSTARTUP=$HOME/.pythonstartup
 fi
