@@ -16,6 +16,8 @@ alias MM='svn diff "$@"'
 alias U='svn diff -r PREV "$@"'
 alias svn=colorsvn
 
+alias pyflakes_tree='find . -name \*.py -exec pyflakes {} \;'
+
 vipm () { 
 	vim `perldoc -l $1 | sed -e 's/pod$/pm/'` 
 }
