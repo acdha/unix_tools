@@ -32,12 +32,18 @@ shopt -s histappend
 PROMPT_COMMAND='history -a'
 MANPATH=~/man:$MANPATH
 
-if [ -f /usr/local/bin/virtualenvwrapper_bashrc ]; then
+if [ ! -z `which virtualenvwrapper_bashrc` ]; then
     export WORKON_HOME=$HOME/.virtualenvs
-    . /usr/local/bin/virtualenvwrapper_bashrc
+    . `which virtualenvwrapper_bashrc`
 fi
 
-if [ -d ~/.bash_completion.d ]; then
+if [ -f /etc/bash_completion.d/* ]; then
+	for c in /etc/bash_completion.d/*; do
+		. "$c"
+	done
+fi
+
+if [ -f ~/.bash_completion.d/* ]; then
 	for c in ~/.bash_completion.d/*; do
 		. "$c"
 	done
