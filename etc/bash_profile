@@ -62,3 +62,20 @@ fi
 if [ -f ~/.pythonstartup ]; then
     export PYTHONSTARTUP=$HOME/.pythonstartup
 fi
+
+if [ -d /opt/local ]; then
+    export MANPATH=/opt/local/share/man:$MANPATH
+    export PATH=/opt/local/sbin:/opt/local/bin:$PATH
+fi
+
+if [ -d /usr/local/git ]; then
+    export MANPATH=/usr/local/git/man:$MANPATH
+    export PATH=/usr/local/git/bin:$PATH
+fi
+
+PS1='\[\033]0;\u@\h:\w\007\]\u@\h:\w$(__vcs_name) $ '
+shopt -s histappend
+PROMPT_COMMAND='history -a'
+MANPATH=~/man:$MANPATH
+HISTCONTROL=ignorespace:ignoredups
+HISTSIZE=2000
