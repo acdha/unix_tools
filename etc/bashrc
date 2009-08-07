@@ -17,7 +17,7 @@ alias U='svn diff -r PREV "$@"'
 # BUG: This breaks with password auth (i.e. SecurID) alias svn=colorsvn
 
 alias pyflakes_tree='find . -name \*.py -exec pyflakes {} \;'
-alias clean_whitespace='find . \( -name \*.py -o -name \*.css -o -name \*.html -o -name \*.js -o -name \*.json \) -print0 | xargs -0 perl -p -i -e "s|[ \t]+$||"'
+alias clean_whitespace='find . \( -name \*.py -o -name \*.css -o -name \*.html -o -name \*.js -o -name \*.json -o -name \*.rst \) -print0 | xargs -0 perl -p -i -e "s|[ \t]+$||"'
 
 vipm () { 
 	vim `perldoc -l $1 | sed -e 's/pod$/pm/'` 
