@@ -2,7 +2,7 @@ export CLICOLOR=1
 export GREP_OPTIONS="-i --color=auto --exclude='*.svn*'"
 export EDITOR=vim
 
-export PATH=/sbin:/usr/sbin:/usr/local/sbin:~/bin:/opt/local/sbin:/opt/local/bin:/usr/local/mysql/bin:/usr/local/php5/bin:/bin:/usr/bin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin
+export PATH=~/bin:/usr/local/sbin:/usr/local/bin:$PATH
 
 # Inspired by http://www.friday.com/bbum/2006/03/13/useful-subversion-shell-aliases/
 alias A='true'
@@ -14,7 +14,10 @@ alias I='true'
 alias M='svn diff "$@"'
 alias MM='svn diff "$@"'
 alias U='svn diff -r PREV "$@"'
-alias svn=colorsvn
+# BUG: This breaks with password auth (i.e. SecurID) alias svn=colorsvn
+
+alias pyflakes_tree='find . -name \*.py -exec pyflakes {} \;'
+alias clean_whitespace='find . \( -name \*.py -o -name \*.css -o -name \*.html -o -name \*.js -o -name \*.json -o -name \*.rst \) -print0 | xargs -0 perl -p -i -e "s|[ \t]+$||"'
 
 vipm () { 
 	vim `perldoc -l $1 | sed -e 's/pod$/pm/'` 

@@ -1,1 +1,5 @@
-/Users/chris/Development/jython2.5/bin/jython
+#!/bin/sh
+
+export JAVA_OPTS=-server
+
+~/Library/Jython/2.5.0/jython $@

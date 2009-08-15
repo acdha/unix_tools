@@ -1,0 +1,7 @@
+try:
+    import rlcompleter
+    import readline
+    readline.parse_and_bind("bind ^I rl_complete")
+except ImportError:
+    import sys
+    print >> sys.stderr, "\aReadline support disabled due to import error"
