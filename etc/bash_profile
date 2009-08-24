@@ -27,12 +27,23 @@ __vcs_name() {
 	fi
 }
 
-if [ -f /usr/local/bin/virtualenvwrapper_bashrc ]; then
+PS1='\[\033]0;\u@\h:\w\007\]\u@\h:\w$(__vcs_name) $ '
+shopt -s histappend
+PROMPT_COMMAND='history -a'
+MANPATH=~/man:$MANPATH
+
+if [ ! -z `which virtualenvwrapper_bashrc 2>/dev/null` ]; then
     export WORKON_HOME=$HOME/.virtualenvs
-    . /usr/local/bin/virtualenvwrapper_bashrc
+    . `which virtualenvwrapper_bashrc`
 fi
 
-if [ -d ~/.bash_completion.d ]; then
+if [ -f /etc/bash_completion.d/* ]; then
+	for c in /etc/bash_completion.d/*; do
+		. "$c"
+	done
+fi
+
+if [ -f ~/.bash_completion.d/* ]; then
 	for c in ~/.bash_completion.d/*; do
 		. "$c"
 	done
