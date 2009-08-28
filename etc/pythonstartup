@@ -1,7 +1,7 @@
 try:
     import rlcompleter
     import readline
-    readline.parse_and_bind("bind ^I rl_complete")
+    readline.parse_and_bind("tab: complete")
 except ImportError:
     import sys
     print >> sys.stderr, "\aReadline support disabled due to import error"
