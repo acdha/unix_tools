@@ -15,11 +15,7 @@ filesBySize = {}
 def walker(arg, dirname, fnames):
     d = os.getcwd()
     os.chdir(dirname)
-    try:
-        fnames.remove('Thumbs')
-        fnames.remove('Previews')
-    except ValueError:
-        pass
+
     for f in fnames:
         if os.path.islink(f):
             continue
@@ -64,12 +60,16 @@ potentialCount = 0
 trueType = type(True)
 sizes = filesBySize.keys()
 sizes.sort()
-for k in sizes:
-    inFiles = filesBySize[k]
+for size in sizes:
+    inFiles = filesBySize[size]
     outFiles = []
     hashes = {}
-    if len(inFiles) == 1: continue
+
+    if len(inFiles) == 1:
+        continue
+
     logging.info('Testing %d %d byte files' % (len(inFiles), size))
+
     for fileName in inFiles:
         if not os.path.isfile(fileName):
             continue
@@ -87,6 +87,7 @@ for k in sizes:
     if len(outFiles):
         potentialDupes.append(outFiles)
         potentialCount = potentialCount + len(outFiles)
+
 del filesBySize
 
 logging.info('Found %d sets of potential duplicates; comparing contents for validation' % potentialCount)
@@ -109,7 +110,7 @@ for aSet in potentialDupes:
 
 for d in dupes:
     print 'Original:  %s' % d[0]
-    
+
     for f in d[1:]:
         if options.delete:
             print 'Deleting:  %s' % f
@@ -121,4 +122,4 @@ for d in dupes:
             print "Duplicate: %s" % f
     print
 
-        
+

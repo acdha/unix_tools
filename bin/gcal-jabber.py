@@ -21,22 +21,22 @@ def ProcessEvents(conn):
 
 def commandHandler(conn, message):
 	if message.getBody() is None: return
-	
+
 	logger.info("Handling incoming message from %s: %s", message.getFrom(), message.getBody())
 	# TODO: add a sender filter
-	
+
 	event           = gdata.calendar.CalendarEventEntry()
 	event.content   = atom.Content(text=message.getBody())
 	event.quick_add = gdata.calendar.QuickAdd(value='true')
 	new_event       = calendar_service.InsertEvent(event, '/calendar/feeds/default/private/full')
-	
+
 	conn.send(xmpp.Message(message.getFrom(), "You can view your new event here: %s" % new_event.GetHtmlLink().href))
 
 def presenceHandler(conn, message):
 	u = message.getFrom();
-	
+
 	logger.info("Handling incoming presence message from %s: %s", u, message.getType())
-	
+
 	if message.getType() == "subscribe":
 		conn.send(xmpp.Presence(to=u, typ='subscribed'))
 		conn.send(xmpp.Presence(to=u, typ='subscribe'))

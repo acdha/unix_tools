@@ -3,6 +3,10 @@
 # path. You may set this option multiple times.
 ignore=CVS
 ignore=.svn
+ignore=.git
+ignore=.hg
+ignore=.coverage
+ignore=media
 
 # Pickle collected data for later comparisons.
 persistent=yes
@@ -82,7 +86,7 @@ variable-rgx=[a-z_][a-z0-9_]{2,30}$
 inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,k,v,f,exc,rc
+good-names=i,j,k,v,f,e,rc
 
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata,tmp
@@ -100,7 +104,7 @@ ignore-mixin-members=yes
 
 # List of classes names for which member attributes should not be checked
 # (useful for classes with attributes dynamically set).
-ignored-classes=SQLObject
+ignored-classes=SQLObject,Model,ForeignKey
 
 # When zope mode is activated, consider the acquired-members option to ignore
 # access to some undefined attributes.
