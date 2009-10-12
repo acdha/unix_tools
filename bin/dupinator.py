@@ -15,11 +15,7 @@ filesBySize = {}
 def walker(arg, dirname, fnames):
     d = os.getcwd()
     os.chdir(dirname)
-    try:
-        fnames.remove('Thumbs')
-        fnames.remove('Previews')
-    except ValueError:
-        pass
+
     for f in fnames:
         if os.path.islink(f):
             continue
@@ -64,8 +60,8 @@ potentialCount = 0
 trueType = type(True)
 sizes = filesBySize.keys()
 sizes.sort()
-for k in sizes:
-    inFiles = filesBySize[k]
+for size in sizes:
+    inFiles = filesBySize[size]
     outFiles = []
     hashes = {}
     if len(inFiles) == 1: continue
