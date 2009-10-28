@@ -38,7 +38,7 @@ load-plugins=
 
 # Disable the message(s) with the given id(s).
 #disable-msg=
-
+disable-msg=W0142,I0011
 
 [REPORTS]
 # set the output format. Available formats are text, parseable, colorized, msvs
@@ -124,7 +124,7 @@ acquired-members=REQUEST,acl_users,aq_parent
 [VARIABLES]
 
 # Tells wether we should check for unused import in __init__ files.
-init-import=no
+init-import=yes
 
 # A regular expression matching names used for dummy variables (i.e. not used).
 dummy-variables-rgx=_|dummy
@@ -207,14 +207,14 @@ deprecated-modules=regsub,string,TERMIOS,Bastion,rexec,sre
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=200
+max-line-length=132
 
 # Maximum number of lines in a module
 max-module-lines=1000
 
 # String used as indentation unit. This is usually " " (4 spaces) or "\t" (1
 # tab).
-indent-string='    '
+indent-string="    "
 
 
 # checks for:
