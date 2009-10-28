@@ -6,16 +6,16 @@ name = Chris Adams
 excludesfile = /Users/chris/.gitignore
 
 [merge]
-tool = diffmerge
+    tool = diffmerge
 
 [mergetool "chdiff"]
-cmd = /usr/bin/env chdiff --wait "$LOCAL" "$REMOTE"
-keepBackup = false
-trustExitCode = false
+    cmd = /usr/bin/env chdiff --wait "$LOCAL" "$REMOTE"
+    keepBackup = false
+    trustExitCode = false
 
 [mergetool "diffmerge"]
-cmd = diffmerge --merge --result=$MERGED $LOCAL $BASE $REMOTE
-trustExitCode = false
+    cmd = diffmerge --merge --result="$MERGED" "$LOCAL" "$BASE" "$REMOTE"
+    trustExitCode = false
 
 [github]
 user = acdha
@@ -24,9 +24,12 @@ user = acdha
 external = /Users/chris/bin/chdiff-git-helper
 
 [color]
-branch = true
-diff = true
-status = true
+    branch = true
+    diff = true
+    status = true
 
 [gc]
-auto = 10
+    auto = 10
+
+[alias]
+        lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
