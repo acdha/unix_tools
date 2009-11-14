@@ -32,8 +32,11 @@ shopt -s histappend
 PROMPT_COMMAND='history -a'
 MANPATH=~/man:$MANPATH
 
+export PIP_REQUIRE_VIRTUALENV=true
+
 if [ ! -z `which virtualenvwrapper_bashrc 2>/dev/null` ]; then
     export WORKON_HOME=$HOME/.virtualenvs
+    export PIP_VIRTUALENV_BASE=$WORKON_HOME
     . `which virtualenvwrapper_bashrc`
 fi
 

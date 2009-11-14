@@ -3,6 +3,10 @@
 # path. You may set this option multiple times.
 ignore=CVS
 ignore=.svn
+ignore=.git
+ignore=.hg
+ignore=.coverage
+ignore=media
 
 # Pickle collected data for later comparisons.
 persistent=yes
@@ -34,7 +38,7 @@ load-plugins=
 
 # Disable the message(s) with the given id(s).
 #disable-msg=
-
+disable-msg=W0142,I0011
 
 [REPORTS]
 # set the output format. Available formats are text, parseable, colorized, msvs
@@ -82,7 +86,7 @@ variable-rgx=[a-z_][a-z0-9_]{2,30}$
 inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,k,v,f,exc,rc
+good-names=i,j,k,v,f,e,rc
 
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata,tmp
@@ -100,7 +104,7 @@ ignore-mixin-members=yes
 
 # List of classes names for which member attributes should not be checked
 # (useful for classes with attributes dynamically set).
-ignored-classes=SQLObject
+ignored-classes=SQLObject,Model,ForeignKey
 
 # When zope mode is activated, consider the acquired-members option to ignore
 # access to some undefined attributes.
@@ -120,7 +124,7 @@ acquired-members=REQUEST,acl_users,aq_parent
 [VARIABLES]
 
 # Tells wether we should check for unused import in __init__ files.
-init-import=no
+init-import=yes
 
 # A regular expression matching names used for dummy variables (i.e. not used).
 dummy-variables-rgx=_|dummy
@@ -203,14 +207,14 @@ deprecated-modules=regsub,string,TERMIOS,Bastion,rexec,sre
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=200
+max-line-length=132
 
 # Maximum number of lines in a module
 max-module-lines=1000
 
 # String used as indentation unit. This is usually " " (4 spaces) or "\t" (1
 # tab).
-indent-string='    '
+indent-string="    "
 
 
 # checks for:

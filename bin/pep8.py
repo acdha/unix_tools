@@ -95,7 +95,7 @@ from fnmatch import fnmatch
 __version__ = '0.2.0'
 __revision__ = '$Rev$'
 
-default_exclude = '.svn,CVS,*.pyc,*.pyo'
+default_exclude = '.svn,CVS,.bzr,.hg,.git'
 
 indent_match = re.compile(r'([ \t]*)').match
 raise_comma_match = re.compile(r'raise\s+\w+\s*(,)').match
@@ -192,8 +192,9 @@ def maximum_line_length(physical_line):
 ##############################################################################
 
 
-def blank_lines(logical_line, blank_lines, indent_level, line_number,
-                previous_logical):
+def blank_lines(logical_line, blank_lines, blank_lines_before_comment,
+                indent_level, line_number, previous_logical,
+                previous_indent_level):
     """
     Separate top-level function and class definitions with two blank lines.
 
@@ -207,17 +208,24 @@ def blank_lines(logical_line, blank_lines, indent_level, line_number,
     """
     if line_number == 1:
         return # Don't expect blank lines before the first line
-    if previous_logical.startswith('@'):
-        return # Don't expect blank lines after function decorator
-    if (logical_line.startswith('def ') or
-        logical_line.startswith('class ') or
-        logical_line.startswith('@')):
-        if indent_level > 0 and blank_lines != 1:
-            return 0, "E301 expected 1 blank line, found %d" % blank_lines
-        if indent_level == 0 and blank_lines != 2:
-            return 0, "E302 expected 2 blank lines, found %d" % blank_lines
-    if blank_lines > 2:
-        return 0, "E303 too many blank lines (%d)" % blank_lines
+    max_blank_lines = max(blank_lines, blank_lines_before_comment)
+    if previous_logical.startswith('@') and max_blank_lines:
+        return 0, "E304 blank lines found after function decorator"
+    if indent_level < previous_indent_level and (
+            logical_line.startswith('def ') or
+            logical_line.startswith('class ') or
+            logical_line.startswith('@')):
+        if indent_level > 0:
+            if max_blank_lines != 1:
+                return 0, ("E301 expected 1 blank line, found %d" %
+                           max_blank_lines)
+        else:
+            if 2 not in (max_blank_lines,
+                         blank_lines + blank_lines_before_comment):
+                return 0, ("E302 expected 2 blank lines, found %d" %
+                           max_blank_lines)
+    if max_blank_lines > 2:
+        return 0, "E303 too many blank lines (%d)" % max_blank_lines
 
 
 def extraneous_whitespace(logical_line):
@@ -250,10 +258,13 @@ def missing_whitespace(logical_line):
     line = logical_line
     for index in range(len(line) - 1):
         char = line[index]
-        if char in ',;:' and line[index + 1] != ' ':
+        next_char = line[index + 1]
+        if char in ',;:' and next_char not in (' ', '\t'):
             before = line[:index]
             if char == ':' and before.count('[') > before.count(']'):
                 continue # Slice syntax, no space required
+            if next_char == ')' and re.search(r'\([^,]+$', before):
+                continue # tuple singlet, no space required
             return index, "E231 missing whitespace after '%s'" % char
 
 
@@ -614,9 +625,11 @@ class Checker:
         self.indent_char = None
         self.indent_level = 0
         self.previous_logical = ''
-        self.blank_lines = 0
+        self.blank_lines = self.blank_lines_before_comment = 0
         self.tokens = []
         parens = 0
+        line_commented = False
+        blank_lines_before_comment = 0
         for token in tokenize.generate_tokens(self.readline_check_physical):
             # print tokenize.tok_name[token[0]], repr(token)
             self.tokens.append(token)
@@ -628,15 +641,22 @@ class Checker:
             if token_type == tokenize.NEWLINE and not parens:
                 self.check_logical()
                 self.blank_lines = 0
+                self.blank_lines_before_comment = 0
                 self.tokens = []
             if token_type == tokenize.NL and not parens:
-                self.blank_lines += 1
+                # Don't count a completely commented line as a blank line.
+                if line_commented:
+                    line_commented = False
+                    if self.blank_lines:
+                        self.blank_lines_before_comment = self.blank_lines
+                        self.blank_lines = 0
+                else:
+                    self.blank_lines += 1
                 self.tokens = []
             if token_type == tokenize.COMMENT:
                 source_line = token[4]
                 token_start = token[2][1]
-                if source_line[:token_start].strip() == '':
-                    self.blank_lines = 0
+                line_commented = source_line[:token_start].strip() == ''
         return self.file_errors
 
     def report_error(self, line_number, offset, text, check):
@@ -674,7 +694,7 @@ def input_file(filename):
     """
     Run all checks on a Python source file.
     """
-    if excluded(filename) or not filename_match(filename):
+    if excluded(filename):
         return {}
     if options.verbose:
         message('checking ' + filename)
@@ -702,7 +722,8 @@ def input_dir(dirname):
                 dirs.remove(subdir)
         files.sort()
         for filename in files:
-            input_file(os.path.join(root, filename))
+            if filename_match(filename):
+                input_file(os.path.join(root, filename))
 
 
 def excluded(filename):
@@ -798,9 +819,13 @@ def process_options(arglist=None):
     parser.add_option('-q', '--quiet', default=0, action='count',
                       help="report only file names, or nothing with -qq")
     parser.add_option('--exclude', metavar='patterns', default=default_exclude,
-                      help="skip matches (default %s)" % default_exclude)
-    parser.add_option('--filename', metavar='patterns',
-                      help="only check matching files (e.g. *.py)")
+                      help="exclude files or directories which match these "
+                        "comma separated patterns (default: %s)" %
+                        default_exclude)
+    parser.add_option('--filename', metavar='patterns', default='*.py',
+                      help="when parsing directories, only check filenames "
+                        "matching these comma separated patterns (default: "
+                        "*.py)")
     parser.add_option('--ignore', metavar='errors', default='',
                       help="skip errors and warnings (e.g. E4,W)")
     parser.add_option('--repeat', action='store_true',
@@ -820,6 +845,7 @@ def process_options(arglist=None):
     options, args = parser.parse_args(arglist)
     if options.testsuite:
         args.append(options.testsuite)
+        options.repeat = True
     if len(args) == 0:
         parser.error('input not specified')
     options.prog = os.path.basename(sys.argv[0])
