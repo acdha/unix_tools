@@ -66,7 +66,7 @@ pidof () { ps -Ac -o pid,command| egrep -i " $@\$" | awk '{print $1}'; }
 
 clean_whitespace() {
     if [ -z "$@" ]; then
-        find . \( -name \*.py -o -name \*.css -o -name \*.html -o -name \*.js -o -name \*.json -o -name \*.rst -o -name \*.conf -o -name \*.spec -o -name \*.cfg \) -print0 | xargs -0 perl -p -i -e "s|[ \t]+$||"
+        find . \( -name \*.py -o -name \*.css -o -name \*.html -o -name \*.js -o -name \*.json -o -name \*.rst -o -name \*.conf -o -name \*.spec -o -name \*.cfg -o -name \*.as \) -print0 | xargs -0 perl -p -i -e "s|[ \t]+$||"
     else
         perl -p -i -e "s|[ \t]+$||" $@
     fi

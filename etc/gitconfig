@@ -4,6 +4,7 @@ name = Chris Adams
 
 [core]
 excludesfile = /Users/chris/.gitignore
+	autocrlf = input
 
 [merge]
 tool = diffmerge
