@@ -3,7 +3,7 @@ email = chris@improbable.org
 name = Chris Adams
 
 [core]
-excludesfile = /Users/chris/.gitignore
+    excludesfile = /Users/chris/.gitignore
 	autocrlf = input
 
 [merge]
@@ -19,10 +19,8 @@ excludesfile = /Users/chris/.gitignore
     trustExitCode = false
 
 [github]
-user = acdha
+    user = acdha
 
-[diff]
-external = /Users/chris/bin/chdiff-git-helper
 
 [color]
     branch = true
