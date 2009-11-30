@@ -1,0 +1,5 @@
+#!/bin/bash
+
+COMPILER_JAR="$0.jar"
+
+java -jar "$COMPILER_JAR" $@
