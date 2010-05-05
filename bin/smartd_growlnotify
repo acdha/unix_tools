@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "$SMARTD_FAILTYPE Problem detected with disk $SMARTD_DEVICE: $SMARTD_MESSAGE" | growlnotify --name="smartd" --priority=Emergency --sticky --appIcon "Disk Utility"
+
