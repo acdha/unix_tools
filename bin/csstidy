@@ -1,3 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
-csstidy.bin "$1" --only_safe_optimisations=true --template=low_compression --sort_properties=true --save_comments=true --silent=true "$2"
+# Attempt to find the actual csstidy binary without accidentally matching on
+# this script or hard-coding a path:
+read CSSTIDY_BIN < <( which -a csstidy.bin csstidy 2>/dev/null | grep -vF "$0" )
+
+if [ ! -x "$CSSTIDY_BIN" ]; then
+    echo "Couldn't locate csstidy.bin or csstidy in the path. Maybe you need to install it?"
+    exit 1
+fi
+
+"$CSSTIDY_BIN" "$1" --only_safe_optimisations=true --template=low_compression --save_comments=true --silent=true "$2"
