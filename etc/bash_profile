@@ -40,13 +40,13 @@ if [ ! -z `which virtualenvwrapper_bashrc 2>/dev/null` ]; then
     . `which virtualenvwrapper_bashrc`
 fi
 
-if [ -f /etc/bash_completion.d/* ]; then
+if [ -d /etc/bash_completion.d ]; then
 	for c in /etc/bash_completion.d/*; do
 		. "$c"
 	done
 fi
 
-if [ -f ~/.bash_completion.d/* ]; then
+if [ -d ~/.bash_completion.d/ ]; then
 	for c in ~/.bash_completion.d/*; do
 		. "$c"
 	done
