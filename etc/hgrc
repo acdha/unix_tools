@@ -1,0 +1,28 @@
+[ui]
+username = Chris Adams <chris@improbable.org>
+ignore = ~/.hgignore
+
+[extensions]
+color =
+fetch =
+graphlog =
+hgext.bookmarks =
+hgext.bookmarks =
+hgext.convert =
+hgext.mq =
+hgext.record =
+hggit =
+hgkeychain =
+histedit = ~/Projects/histedit
+purge =
+rebase =
+
+[defaults]
+addremove = --similarity 100
+
+[alias]
+i = incoming
+l = glog
+o = outgoing
+s = status
+
