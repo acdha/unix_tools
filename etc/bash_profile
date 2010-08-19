@@ -40,10 +40,9 @@ if [ ! -z `which virtualenvwrapper_bashrc 2>/dev/null` ]; then
     . `which virtualenvwrapper_bashrc`
 fi
 
-if [ -d /etc/bash_completion.d ]; then
-	for c in /etc/bash_completion.d/*; do
-		. "$c"
-	done
+# On Ubuntu / Debian this is provided by the bash-completion package:
+if [ -f /etc/bash_completion ]; then
+    source /etc/bash_completion
 fi
 
 if [ -d ~/.bash_completion.d/ ]; then
