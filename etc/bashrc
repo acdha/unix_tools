@@ -14,7 +14,10 @@ alias I='true'
 alias M='svn diff "$@"'
 alias MM='svn diff "$@"'
 alias U='svn diff -r PREV "$@"'
-# BUG: This breaks with password auth (i.e. SecurID) alias svn=colorsvn
+# BUG: This breaks with password auth (i.e. SecurID)
+# alias svn=colorsvn
+
+alias jsonpretty='python -mjson.tool'
 
 alias pyflakes_tree='find . -name \*.py -exec pyflakes {} \;'
 
@@ -70,4 +73,8 @@ clean_whitespace() {
     else
         perl -p -i -e "s|[ \t]+$||" $@
     fi
+}
+
+clean_pyc() {
+    find . $VIRTUAL_ENV -name \*.pyc -delete
 }
