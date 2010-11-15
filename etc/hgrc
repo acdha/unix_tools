@@ -7,15 +7,14 @@ color =
 fetch =
 graphlog =
 hgext.bookmarks =
-hgext.bookmarks =
 hgext.convert =
 hgext.mq =
 hgext.record =
 hggit =
 hgkeychain =
-histedit = ~/Projects/histedit
 purge =
 rebase =
+pager =
 
 [defaults]
 addremove = --similarity 100
@@ -26,3 +25,8 @@ l = glog
 o = outgoing
 s = status
 
+
+[pager]
+pager = less
+quiet = True
+attend = diff,status,log,qdiff,blame,annotate,pdiff,glog
