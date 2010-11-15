@@ -3,3 +3,8 @@ tmp*
 *.tmproj
 *.swp
 .noseids
+.gitignore
+*.mo
+nbproject
+.idea
+.DS_Store
