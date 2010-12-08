@@ -5,6 +5,7 @@ filetype plugin indent on
 set shortmess=I
 set showcmd
 set ruler
+set nu
 set incsearch
 set ignorecase
 
