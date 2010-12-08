@@ -109,6 +109,8 @@ for aSet in potentialDupes:
         dupes.append(outFiles)
 
 for d in dupes:
+    d = sorted(d, key=os.path.basename, reverse=True)
+
     print 'Original:  %s' % d[0]
 
     for f in d[1:]:
