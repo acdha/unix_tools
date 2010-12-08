@@ -8,6 +8,7 @@ fetch =
 graphlog =
 hgext.bookmarks =
 hgext.convert =
+hgext.extdiff=
 hgext.mq =
 hgext.record =
 hggit =
@@ -15,6 +16,8 @@ hgkeychain =
 purge =
 rebase =
 pager =
+
+transplant=
 
 [defaults]
 addremove = --similarity 100
