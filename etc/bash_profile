@@ -34,10 +34,11 @@ MANPATH=~/man:$MANPATH
 
 export PIP_REQUIRE_VIRTUALENV=true
 
-if [ ! -z `which virtualenvwrapper_bashrc 2>/dev/null` ]; then
-    export WORKON_HOME=$HOME/.virtualenvs
-    export PIP_VIRTUALENV_BASE=$WORKON_HOME
-    . `which virtualenvwrapper_bashrc`
+VIRTUALENV_WRAPPER=`which virtualenvwrapper.sh 2>/dev/null`
+if [ ! -z "$VIRTUALENV_WRAPPER" ]; then
+    export WORKON_HOME="$HOME/.virtualenvs"
+    export PIP_VIRTUALENV_BASE="$WORKON_HOME"
+    . "$VIRTUALENV_WRAPPER"
 fi
 
 # On Ubuntu / Debian this is provided by the bash-completion package:
