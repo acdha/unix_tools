@@ -21,8 +21,12 @@ set expandtab
 set autoindent
 set smartindent
 
-" Linewidth to endless
-set textwidth=0
+set textwidth=80
+
+" Report trailing whitespace:
+set listchars=tab:>-,trail:·,eol:$
+nmap <silent> <leader>s :set nolist!<CR>
+
 
 " ViM autocommands for binary plist files
 " Copyright (C) 2005 Moritz Heckscher
