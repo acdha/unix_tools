@@ -33,3 +33,6 @@ s = status
 pager = less
 quiet = True
 attend = diff,status,log,qdiff,blame,annotate,pdiff,glog
+
+[web]
+cacerts = /etc/ssl/certs/ca-certificates.crt
