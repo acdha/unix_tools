@@ -27,7 +27,17 @@ __vcs_name() {
 	fi
 }
 
-PS1='\[\033]0;\u@\h:\w\007\]\u@\h:\w$(__vcs_name) $ '
+case "$TERM" in
+    xterm-color) color_prompt=yes;;
+esac
+
+if [ "$color_prompt" = yes ]; then
+    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[0;33m\]$(__vcs_name) \[\033[00m\]\$ '
+else
+    PS1='\u@\h:\w$(__vcs_name) \$ '
+fi
+unset color_prompt
+
 shopt -s histappend
 PROMPT_COMMAND='history -a'
 MANPATH=~/man:$MANPATH
@@ -76,7 +86,6 @@ if [ -d /usr/local/git ]; then
     export PATH=/usr/local/git/bin:$PATH
 fi
 
-PS1='\[\033]0;\u@\h:\w\007\]\u@\h:\w$(__vcs_name) $ '
 shopt -s histappend
 PROMPT_COMMAND='history -a'
 MANPATH=~/man:$MANPATH
