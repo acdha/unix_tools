@@ -34,40 +34,6 @@ localtime () {
 	perl -e "print scalar localtime($1), \"\n\";"
 }
 
-seq () {
-	LAST=9;
-	FIRST=1;
-	INCREMENT=1;
-
-	if [ ! -z "$3" ]; then
-		LAST=$3;
-		INCREMENT=$2;
-		FIRST=$1;
-	else
-		if [ ! -z "$2" ]; then
-			LAST=$2;
-			FIRST=$1;
-		elif [ ! -z "$1" ]; then
-			LAST=$1;
-		else
-			echo "Usage: print numeric sequences compatibly with GNU seq:"
-			echo "       seq LAST"
-			echo "       seq FIRST LAST"
-			echo "       seq FIRST INCREMENT LAST"
-			return
-		fi
-	fi
-
-	if [ $FIRST -gt $LAST -a  $INCREMENT -gt 0 ]; then
-		INCREMENT=$(( -1 * $INCREMENT ))
-	fi
-		
-	jot - $FIRST $LAST $INCREMENT
-}
-
-
-pidof () { ps -Ac -o pid,command| egrep -i " $@\$" | awk '{print $1}'; }
-
 clean_whitespace() {
     if [ -z "$@" ]; then
         find . \( -name \*.py -o -name \*.css -o -name \*.html -o -name \*.js -o -name \*.json -o -name \*.rst -o -name \*.conf -o -name \*.spec -o -name \*.cfg -o -name \*.as \) -print0 | xargs -0 perl -p -i -e "s|[ \t]+$||"
