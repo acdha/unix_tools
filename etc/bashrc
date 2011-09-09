@@ -1,5 +1,4 @@
 export CLICOLOR=1 
-export GREP_OPTIONS="-i --color=auto --exclude='*.svn*'"
 export EDITOR=vim
 export LESS=FRSXQ
 
