@@ -1,9 +1,10 @@
 [user]
-    email = chris@improbable.org
-    name = Chris Adams
+	email = chris@improbable.org
+	name = Chris Adams
 
 [core]
-    excludesfile = /Users/chris/.gitignore
+	excludesfile = ~/.gitignore
+    attributesfile = ~/.gitattributes
 	autocrlf = input
 
 [merge]
@@ -32,3 +33,10 @@
 [alias]
     lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
     summarize = !git log --date=iso --author='chris' --since=`date +%Y-%m-%d` --until=`date -v +1d +%Y-%m-%d`  --summary --show-notes --oneline --date-order
+	enabled = 1
+
+[diff "minified-css"]
+	textconv = csstidy
+[diff "minified-js"]
+    # See https://github.com/einars/js-beautify
+	textconv = js-beautify
