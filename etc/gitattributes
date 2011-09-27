@@ -1,2 +1,4 @@
 *.min.css diff=minified-css
 *.min.js diff=minified-js
+*.xml diff=xml-tidy
+*.json diff=json-tidy
