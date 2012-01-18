@@ -45,6 +45,8 @@
 [diff "xml-tidy"]
     textconv = xml-tidy
 
-[diff "json-tidy"]
-    textconv = json-tidy
+[diff "jsonpretty"]
+    textconv = python -mjson.tool
 
+[diff "msgcat"]
+    textconv = msgcat --no-location
