@@ -34,6 +34,8 @@
     lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
     summarize = !git log --date=iso --author='chris' --since=`date +%Y-%m-%d` --until=`date -v +1d +%Y-%m-%d`  --summary --show-notes --oneline --date-order
 	enabled = 1
+[rerere]
+    enabled = 1
 
 [diff "minified-css"]
     textconv = csstidy
