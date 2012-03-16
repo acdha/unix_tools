@@ -1,5 +1,4 @@
 *.pyc
-tmp*
 *.tmproj
 *.swp
 .noseids
@@ -9,6 +8,10 @@ nbproject
 .idea
 .DS_Store
 htmlcov
-.coverage
+.coverage*
 *.class
 *.noindex
+*.sublime-*
+dev*settings*
+.tm_properties
+.noserc
