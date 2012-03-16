@@ -51,7 +51,8 @@ unset color_prompt
 shopt -s histappend
 PROMPT_COMMAND='history -a'
 HISTCONTROL=ignorespace:ignoredups
-HISTSIZE=2000
+HISTSIZE=8000
+HISTFILESIZE=$HISTSIZE
 
 MANPATH=~/man:$MANPATH
 
