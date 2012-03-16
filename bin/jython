@@ -1,5 +1,0 @@
-#!/bin/sh
-
-export JAVA_OPTS=-server
-
-~/Library/Jython/2.5.0/jython $@
