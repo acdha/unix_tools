@@ -3,10 +3,19 @@
 # Report time to first byte for the provided URL using a cache buster to ensure
 # that we're measuring full cold-cache performance
 
+set -e
+
+if [ "$1" == "--allow-cache" ]; then
+    shift;
+    CACHE_BUST=""
+else
+    CACHE_BUST="?`date +%s`"
+fi
+
 while (($#)); do
     echo $1
     curl -so /dev/null -H "Pragma: no-cache" -H "Cache-Control: no-cache" \
         -w "%{http_code}\tPre-Transfer: %{time_pretransfer}\tStart Transfer: %{time_starttransfer}\tTotal: %{time_total}\tSize: %{size_download}\n" \
-        "$1?`date +%s`"
+        "$1${CACHE_BUST}"
     shift
 done
