@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 base_url" >&2
+    exit 1
+fi
+
+export BASE_URL="$1"
+
+# Construct two URLs guaranteed not to be in the cache:
+NOGZIP_INITIAL="${BASE_URL}?plain-`date +%s`"
+GZIP_INITIAL="${BASE_URL}?gzip-`date +%s`"
+
+do_curl () {
+    echo "$1:"
+    shift
+    curl -si -w 'GET %{url_effective} %{http_code}' $@  | grep -E '^(GET|Vary|Content-Encoding)' | perl -p -e 's|^|\t|'
+    echo
+}
+
+# Test the case where the initial request is generated without Accept-Encoding.
+# Clients should receive encoded responses based on their request rather than
+# the first cached request:
+do_curl 'Initial fetch, without Accept-Encoding' $NOGZIP_INITIAL
+do_curl 'Fetching with Accept-Encoding' --compress $NOGZIP_INITIAL
+do_curl 'Repeat fetch without Accept-Encoding' $NOGZIP_INITIAL
+
+# When the initial cached response is generated with Content-Encoding,
+# a request without Accept-Encoding should receive an uncompressed response:
+do_curl 'Initial fetch, with Accept-Encoding' --compress $GZIP_INITIAL
+do_curl 'Fetching without Accept-Encoding' $GZIP_INITIAL
+do_curl 'Repeat fetch with Accept-Encoding' --compress $GZIP_INITIAL
