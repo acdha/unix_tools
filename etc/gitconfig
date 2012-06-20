@@ -31,9 +31,9 @@
     auto = 50
 
 [alias]
-    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
-    summarize = !git log --date=iso --author='chris' --since=`date +%Y-%m-%d` --until=`date -v +1d +%Y-%m-%d`  --summary --show-notes --oneline --date-order
-	enabled = 1
+    lg = log --oneline --graph --decorate --abbrev-commit --date=relative
+    lga = log --oneline --graph --decorate --abbrev-commit --date=relative --all
+
 [rerere]
     enabled = 1
 
