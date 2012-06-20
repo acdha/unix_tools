@@ -56,8 +56,6 @@ HISTFILESIZE=$HISTSIZE
 
 MANPATH=~/man:$MANPATH
 
-export PIP_REQUIRE_VIRTUALENV=true
-
 VIRTUALENV_WRAPPER=`which virtualenvwrapper.sh 2>/dev/null`
 if [ ! -z "$VIRTUALENV_WRAPPER" ]; then
     export WORKON_HOME="$HOME/.virtualenvs"
