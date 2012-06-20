@@ -1,11 +1,11 @@
 [user]
-	email = chris@improbable.org
-	name = Chris Adams
+    email = chris@improbable.org
+    name = Chris Adams
 
 [core]
-	excludesfile = ~/.gitignore
+    excludesfile = ~/.gitignore
     attributesfile = ~/.gitattributes
-	autocrlf = input
+    autocrlf = input
 
 [merge]
     tool = diffmerge
@@ -52,3 +52,5 @@
 
 [diff "msgcat"]
     textconv = msgcat --no-location
+[hub]
+	protocol = https
