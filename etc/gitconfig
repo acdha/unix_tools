@@ -31,6 +31,9 @@
     lg = log --oneline --graph --decorate --abbrev-commit --date=relative
     lga = log --oneline --graph --decorate --abbrev-commit --date=relative --all
 
+[difftool "chdiff"]
+    cmd = /usr/bin/env chdiff --wait "$LOCAL" "$REMOTE"
+
 [rerere]
     enabled = 1
 
