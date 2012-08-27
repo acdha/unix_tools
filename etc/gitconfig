@@ -27,9 +27,6 @@
     diff = true
     status = true
 
-[gc]
-    auto = 50
-
 [alias]
     lg = log --oneline --graph --decorate --abbrev-commit --date=relative
     lga = log --oneline --graph --decorate --abbrev-commit --date=relative --all
