@@ -35,7 +35,7 @@ localtime () {
 
 clean_whitespace() {
     if [ $# -lt 1 ]; then
-        find . \( -name \*.py -o -name \*.css -o -name \*.html -o -name \*.js -o -name \*.json -o -name \*.rst -o -name \*.conf -o -name \*.spec -o -name \*.cfg -o -name \*.as -o -name \*.json \) -print0 | xargs -0 perl -p -i -e "s|[ \t]+$||"
+        find . -type f -a \( -name \*.py -o -name \*.css -o -name \*.html -o -name \*.js -o -name \*.json -o -name \*.rst -o -name \*.conf -o -name \*.spec -o -name \*.cfg -o -name \*.as -o -name \*.json \) -print0 | xargs -0 perl -p -i -e "s|[ \t]+$||"
     else
         perl -p -i -e "s|[ \t]+$||" $@
     fi
