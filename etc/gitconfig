@@ -52,3 +52,6 @@
 
 [diff "msgcat"]
     textconv = msgcat --no-location --sort-output
+
+[branch]
+	autosetuprebase = always
