@@ -48,6 +48,4 @@
     textconv = python -mjson.tool
 
 [diff "msgcat"]
-    textconv = msgcat --no-location
-[hub]
-	protocol = https
+    textconv = msgcat --no-location --sort-output
