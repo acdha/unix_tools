@@ -12,6 +12,8 @@ MAJOR_VERSION = sys.version_info[0]
 
 CACHE = {}
 
+OUTPUT_FORMAT = "{0:8s}\t{1:8s}\t{2:8s}\t{3:s}\n"
+
 
 # This is a bit gnarly but what we're trying to do is avoid a *MASSIVE* penalty
 # endlessly encoding and reencoding Unicode strings for output. This is
@@ -27,7 +29,7 @@ else:
 
 
 def main():
-    stdout.write(("%8s\t%8s\t%s\t%s\n" % ("Char", "UTF8 Hex", "Category",
+    stdout.write(("%8s\t%8s\t%8s\t%s\n" % ("Char", "UTF8 Hex", "Category",
                                           "Name")).encode("utf-8"))
     stdout.write(b"-" * 72)
     stdout.write(b"\n")
@@ -41,14 +43,20 @@ def main():
             # Since a given character can occur many times in our input, we'll
             # precompute everything including the concatenation and UTF-8
             # encoding:
-            try:
+
+            if char in CACHE:
                 l = CACHE[char]
-            except KeyError:
-                cat = category(char).encode("utf-8")
-                utf8_hex = hexlify(char.encode("utf8"))
-                char_name = name(char, "<UNKNOWN>").encode("utf-8")
-                CACHE[char] = l = char.encode("utf-8") + b"\t" + utf8_hex \
-                                  + b"\t" + cat + b"\t" + char_name + b"\n"
+            else:
+                cat = category(char)
+                utf8_hex = hexlify(char.encode("utf8")).decode("ascii")
+                char_name = name(char, "<UNKNOWN>")
+
+                if cat in ('Cc', 'Zs'):
+                    display_char = '\\u{0:04d}'.format(ord(char))
+                else:
+                    display_char = char
+
+                CACHE[char] = l = OUTPUT_FORMAT.format(display_char, utf8_hex, cat, char_name).encode("utf-8")
 
             stdout.write(l)
 
