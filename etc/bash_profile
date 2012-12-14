@@ -37,6 +37,11 @@ __vcs_name() {
 	fi
 }
 
+export GIT_PS1_SHOWDIRTYSTATE=1
+export GIT_PS1_SHOWSTASHSTATE=1
+export GIT_PS1_SHOWUNTRACKEDFILES=1
+export GIT_PS1_SHOWCOLORHINTS=1
+
 case "$TERM" in
     xterm-color) color_prompt=yes;;
 esac
