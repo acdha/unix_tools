@@ -4,19 +4,6 @@ export LESS=FRSXQ
 
 export PATH=~/bin:/usr/local/sbin:/usr/local/bin:$PATH
 
-# Inspired by http://www.friday.com/bbum/2006/03/13/useful-subversion-shell-aliases/
-alias A='true'
-alias C='mate "$@"'
-alias D='true'
-alias G='svn diff "$@"'
-alias GC='mate "$@"'
-alias I='true'
-alias M='svn diff "$@"'
-alias MM='svn diff "$@"'
-alias U='svn diff -r PREV "$@"'
-# BUG: This breaks with password auth (i.e. SecurID)
-# alias svn=colorsvn
-
 alias jsonpretty='python -mjson.tool'
 
 alias pyflakes_tree='find . -name \*.py -exec pyflakes {} \;'
