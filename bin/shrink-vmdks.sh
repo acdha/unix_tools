@@ -6,4 +6,4 @@ set -e
 export PATH="/Applications/VMware Fusion.app/Contents/Library:$PATH"
 
 # Note that we're using GNU Parallel solely for nicer syntax than xargs:
-find "${1:-.}" -name \*.vmdk -print0 | grep -z -v -E "[-]s[0-9]+[.]vmdk" | parallel --null --ungroup -j 1 'echo {}; vmware-vdiskmanager -d {}; vmware-vdiskmanager -k {}'
+find "${1:-.}" -name \*.vmdk -print0 | grep --null -v -E "[-]s[0-9]+[.]vmdk" | parallel --null --ungroup -j 1 'echo {}; vmware-vdiskmanager -d {}; vmware-vdiskmanager -k {}'
