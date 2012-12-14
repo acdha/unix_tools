@@ -42,23 +42,6 @@ def create_home_links(source_dir, target_dir, f_prefix=""):
             print >>sys.stderr, "Unable to symlink %s to %s: %s" % (source_file, target_file, e)
             continue
 
-def check_gitconfig():
-    gitconfig = os.path.expanduser("~/.gitconfig")
-    if os.path.exists(gitconfig):
-        devnull = open("/dev/null", "w")
-        rc = subprocess.call(["git", "config", "--global", "github.token"], stdout=devnull)
-
-        if rc == 0:
-            return
-
-        if not sys.stdin.isatty():
-            print >>sys.stderr, "WARNING: This doesn't appear to be a terminal - please run git config to set the github token!"
-        else:
-            import getpass
-            token = getpass.getpass("Github token: ")
-            if token:
-                subprocess.check_call(["git", "config", "--global", "github.token", token])
-
 
 def main():
     root = dirname(realpath(__file__))
@@ -66,8 +49,6 @@ def main():
 
     create_home_links(join(root, "etc"), "~/", ".")
     create_home_links(join(root, "bin"), "~/bin")
-
-    check_gitconfig()
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
 [user]
-    email = chris@improbable.org
-    name = Chris Adams
+	email = chris@improbable.org
+	name = Chris Adams
 
 [core]
     excludesfile = ~/.gitignore
@@ -20,7 +20,8 @@
     trustExitCode = false
 
 [github]
-    user = acdha
+	user = acdha
+    password = !security find-generic-password -gs github.password -w | tr -d '\n'
 
 [color]
     branch = true
