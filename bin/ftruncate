@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+# encoding: utf-8
+from __future__ import absolute_import, unicode_literals, print_function
+
+import os
+import sys
+
+for filename in sys.argv[1:]:
+    filename = os.path.expanduser(filename)
+
+    if not os.path.exists(filename):
+        print("%s does not exist" % filename, file=sys.stderr)
+        continue
+
+    try:
+        with open(filename, "wb") as f:
+            f.truncate(0)
+    except EnvironmentError as exc:
+        print("Unable to truncate %s: %s" % (filename, exc), file=sys.stderr)
