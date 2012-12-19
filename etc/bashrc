@@ -4,6 +4,8 @@ export LESS=FRSXQ
 
 export PATH=~/bin:/usr/local/sbin:/usr/local/bin:$PATH
 
+alias ab='echo -e "Use boom!\a" >&2; boom $@'
+
 alias jsonpretty='python -mjson.tool'
 
 alias pyflakes_tree='find . -name \*.py -exec pyflakes {} \;'
