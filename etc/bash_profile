@@ -68,6 +68,10 @@ if [ ! -z "$VIRTUALENV_WRAPPER" ]; then
     . "$VIRTUALENV_WRAPPER"
 fi
 
+if [ -f /usr/local/etc/bash_completion ]; then
+    . /usr/local/etc/bash_completion
+fi
+
 if [ -d ~/.bash_completion.d/ ]; then
 	for c in ~/.bash_completion.d/*; do
 		. "$c"
