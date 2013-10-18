@@ -21,8 +21,6 @@ set expandtab
 set autoindent
 set smartindent
 
-set textwidth=80
-
 " Report trailing whitespace:
 set listchars=tab:>-,trail:·,eol:$
 nmap <silent> <leader>s :set nolist!<CR>
