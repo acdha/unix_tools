@@ -1,5 +1,6 @@
 *.min.css diff=minified-css
 *.min.js diff=minified-js
+*.min.js.map diff=jsonpretty
 *.xml diff=xml-tidy
 *.json diff=jsonpretty
 *.po diff=msgcat
