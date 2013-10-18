@@ -49,6 +49,7 @@ def main():
 
     create_home_links(join(root, "etc"), "~/", ".")
     create_home_links(join(root, "bin"), "~/bin")
+    create_home_links(join(root, "bash_completion.d"), "~/.bash_completion.d")
 
 if __name__ == "__main__":
     main()
