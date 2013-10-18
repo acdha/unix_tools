@@ -39,7 +39,7 @@
     enabled = 1
 
 [diff "minified-css"]
-    textconv = csstidy
+    textconv = cssbeautify
 
 [diff "minified-js"]
     # See https://github.com/einars/js-beautify
