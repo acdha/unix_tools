@@ -3,3 +3,5 @@
 *.xml diff=xml-tidy
 *.json diff=jsonpretty
 *.po diff=msgcat
+*.csv diff=csv
+*.tsv diff=tsv

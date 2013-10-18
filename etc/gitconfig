@@ -60,3 +60,7 @@
 	autosetuprebase = always
 [push]
 	default = current
+[diff "csv"]
+	wordRegex = [^,]
+[diff "tsv"]
+	wordRegex = [^\t]
