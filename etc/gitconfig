@@ -21,7 +21,7 @@
 
 [github]
 	user = acdha
-    password = !security find-generic-password -gs github.password -w | tr -d '\n'
+    password = !security find-internet-password -a acdha -gs https://github.com -w | tr -d '\n'
 
 [color]
     branch = true
