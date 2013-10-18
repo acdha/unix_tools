@@ -64,3 +64,6 @@
 	wordRegex = [^,]
 [diff "tsv"]
 	wordRegex = [^\t]
+
+[mergetool]
+	keepBackup = false
