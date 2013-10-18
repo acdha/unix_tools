@@ -5,7 +5,8 @@
 [core]
     excludesfile = ~/.gitignore
     attributesfile = ~/.gitattributes
-    autocrlf = input
+	autocrlf = input
+	precomposeunicode = true
 
 [merge]
     tool = diffmerge
