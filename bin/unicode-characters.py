@@ -12,7 +12,7 @@ MAJOR_VERSION = sys.version_info[0]
 
 CACHE = {}
 
-OUTPUT_FORMAT = "{0:8s}\t{1:8s}\t{2:8s}\t{3:s}\n"
+OUTPUT_FORMAT = "{0:10s}  {1:>10s}  {2:>10s}  {3:>8s}  {4:s}\n"
 
 
 # This is a bit gnarly but what we're trying to do is avoid a *MASSIVE* penalty
@@ -29,8 +29,7 @@ else:
 
 
 def main():
-    stdout.write(("%8s\t%8s\t%8s\t%s\n" % ("Char", "UTF8 Hex", "Category",
-                                          "Name")).encode("utf-8"))
+    stdout.write(OUTPUT_FORMAT.format("Char", "Decimal", "UTF8 Hex", "Category", "Name").encode("utf-8"))
     stdout.write(b"-" * 72)
     stdout.write(b"\n")
     stdout.flush()
@@ -51,12 +50,12 @@ def main():
                 utf8_hex = hexlify(char.encode("utf8")).decode("ascii")
                 char_name = name(char, "<UNKNOWN>")
 
-                if cat in ('Cc', 'Zs'):
-                    display_char = '\\u{0:04d}'.format(ord(char))
+                if cat in ('Cc', 'Cs', 'Mn', 'Zs'):
+                    display_char = char.encode("unicode_escape").decode("ascii")
                 else:
                     display_char = char
 
-                CACHE[char] = l = OUTPUT_FORMAT.format(display_char, utf8_hex, cat, char_name).encode("utf-8")
+                CACHE[char] = l = OUTPUT_FORMAT.format(display_char, str(ord(char)), utf8_hex, cat, char_name).encode("utf-8")
 
             stdout.write(l)
 
