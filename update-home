@@ -8,6 +8,10 @@ from filecmp import cmp
 import subprocess
 
 def create_home_links(source_dir, target_dir, f_prefix=""):
+    if not os.path.exists(source_dir):
+        print >>sys.stderr, "Skipping non-existent source directory: %s" % source_dir
+        return
+
     target_dir = os.path.expanduser(target_dir)
 
     if not os.path.exists(target_dir):
