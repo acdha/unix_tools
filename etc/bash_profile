@@ -72,6 +72,15 @@ if [ -f /usr/local/etc/bash_completion ]; then
     . /usr/local/etc/bash_completion
 fi
 
+# e.g. homebrew or Debian/Ubuntu with the bash-completion package:
+if [ -f /usr/local/etc/bash_completion ]; then
+    . /usr/local/etc/bash_completion
+elif [ -d /usr/local/etc/bash_completion.d ]; then
+    for c in /usr/local/etc/bash_completion.d/*; do
+        . "$c"
+    done
+fi
+
 if [ -d ~/.bash_completion.d/ ]; then
 	for c in ~/.bash_completion.d/*; do
 		. "$c"
