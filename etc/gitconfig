@@ -67,3 +67,5 @@
 
 [mergetool]
 	keepBackup = false
+[rebase]
+	autosquash = true
