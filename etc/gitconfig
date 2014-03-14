@@ -69,3 +69,5 @@
 	keepBackup = false
 [rebase]
 	autosquash = true
+[pull]
+	ff = true
