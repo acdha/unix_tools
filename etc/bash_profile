@@ -15,7 +15,7 @@ __has_parent_dir () {
     test -d "$1" && return 0;
 
     current="."
-    while [ ! "$current" -ef "$current/.." ]; do 
+    while [ ! "$current" -ef "$current/.." ]; do
         if [ -d "$current/$1" ]; then
             return 0;
         fi
@@ -26,10 +26,10 @@ __has_parent_dir () {
 }
 
 __vcs_name() {
-	if [ -d .svn ]; then 
-		echo " [svn]"; 
-	elif [ -d RCS ]; 	then 
-		echo " [RCS]";  
+	if [ -d .svn ]; then
+		echo " [svn]";
+	elif [ -d RCS ]; then
+		echo " [RCS]";
     elif __has_parent_dir ".git"; then
         echo "$(__git_ps1 ' [git %s]')";
     elif __has_parent_dir ".hg"; then
