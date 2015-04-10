@@ -22,8 +22,4 @@ tmp
 node_modules
 .static-media
 .tx
-build
-dist
-*.egg
-*.egg-info
 .tox
