@@ -1,127 +1,116 @@
-#! /usr/bin/python
+#! /usr/bin/env python3
 """
 Scan the provided directories on the command-line and report duplicate files, optionally removing them
 """
-import os
-import sys
-import stat
+
+import argparse
 import hashlib
-from optparse import OptionParser
-import logging
+import os
 import shutil
+from binascii import hexlify
+from collections import defaultdict, deque
+from concurrent.futures import ThreadPoolExecutor
 
-filesBySize = {}
+from tqdm import tqdm
 
-def walker(arg, dirname, fnames):
-    d = os.getcwd()
-    os.chdir(dirname)
 
-    for f in fnames:
-        if os.path.islink(f):
+def find_files(directories):
+    for directory in directories:
+        walker = os.walk(directory, followlinks=True)
+        for dirpath, dirnames, filenames in walker:
+            for filename in filenames:
+                yield os.path.join(dirpath, filename)
+
+
+def get_file_hash(filename):
+    if not os.path.isfile(filename):
+        raise ValueError('Expected %s to be a normal file' % filename)
+
+    h = hashlib.sha512()
+
+    with open(filename, 'rb') as f:
+        while True:
+            d = f.read(1024 * 1024)
+
+            if d:
+                h.update(d)
+            else:
+                break
+
+    return filename, h.digest()
+
+
+def find_duplicates(directories):
+    for d in directories:
+        if not os.path.exists(d):
+            raise ValueError('Directory %s does not exist' % d)
+        elif not os.path.isdir(d):
+            raise ValueError('Expected %s to be a directory' % d)
+
+    file_hashes = defaultdict(set)
+
+    print('Scanning for files…')
+
+    all_files = deque()
+    for filename in tqdm(find_files(directories)):
+        all_files.append(filename)
+
+    print('Hashing %d files' % len(all_files))
+
+    with ThreadPoolExecutor() as executor:
+        for filename, digest in tqdm(executor.map(get_file_hash, all_files),
+                                     total=len(all_files)):
+
+            file_hashes[digest].add(filename)
+
+    for digest, filenames in file_hashes.items():
+        if len(filenames) < 2:
             continue
-        if not os.path.isfile(f):
-            continue
-        size = os.stat(f)[stat.ST_SIZE]
-        if size < 100:
-            continue
-        if filesBySize.has_key(size):
-            a = filesBySize[size]
         else:
-            a = []
-            filesBySize[size] = a
-        a.append(os.path.join(dirname, f))
-    os.chdir(d)
-
-parser = OptionParser(__doc__.strip())
-parser.add_option("--trash",  action="store_true", default=False, help='Move duplicates to the Trash')
-parser.add_option("--delete",  action="store_true", default=False, help='Delete files')
-parser.add_option("--verbose", action="store_true", default=False, help="Display progress information")
-
-(options, directories) = parser.parse_args()
-
-if options.delete and options.trash:
-    parser.error("You can delete or trash files but not both!")
-
-logging.basicConfig(
-    format='%(levelname)s: %(message)s',
-    level=logging.INFO if options.verbose else logging.WARN
-)
-
-for x in directories:
-    if not os.path.isdir(x):
-        logging.error("Skipping %s: not a directory" % x)
-        continue
-    logging.info('Scanning "%s"' % x)
-    os.path.walk(x, walker, filesBySize)
-
-print 'Finding potential dupes...'
-potentialDupes = []
-potentialCount = 0
-trueType = type(True)
-sizes = filesBySize.keys()
-sizes.sort()
-for size in sizes:
-    inFiles = filesBySize[size]
-    outFiles = []
-    hashes = {}
-
-    if len(inFiles) == 1:
-        continue
-
-    logging.info('Testing %d %d byte files' % (len(inFiles), size))
-
-    for fileName in inFiles:
-        if not os.path.isfile(fileName):
-            continue
-        aFile = file(fileName, 'r')
-        hashValue = hashlib.sha224(aFile.read(4096)).digest()
-        if hashes.has_key(hashValue):
-            x = hashes[hashValue]
-            if type(x) is not trueType:
-                outFiles.append(hashes[hashValue])
-                hashes[hashValue] = True
-            outFiles.append(fileName)
-        else:
-            hashes[hashValue] = fileName
-        aFile.close()
-    if len(outFiles):
-        potentialDupes.append(outFiles)
-        potentialCount = potentialCount + len(outFiles)
-
-del filesBySize
-
-logging.info('Found %d sets of potential duplicates; comparing contents for validation' % potentialCount)
-
-dupes = []
-for aSet in potentialDupes:
-    outFiles = []
-    hashes = {}
-    for fileName in aSet:
-        logging.debug('Hashing file "%s"...' % fileName)
-        hashValue = hashlib.sha224(file(fileName).read()).digest()
-        if hashes.has_key(hashValue):
-            if not len(outFiles):
-                outFiles.append(hashes[hashValue])
-            outFiles.append(fileName)
-        else:
-            hashes[hashValue] = fileName
-    if len(outFiles):
-        dupes.append(outFiles)
-
-for d in dupes:
-    d = sorted(d, key=os.path.basename, reverse=True)
-
-    print 'Original:  %s' % d[0]
-
-    for f in d[1:]:
-        if options.delete:
-            print 'Deleting:  %s' % f
-            os.remove(f)
-        elif options.trash:
-            print 'Trashing:  %s' % f
-            shutil.move(f, os.path.join(os.path.expanduser("~/.Trash/"), os.path.basename(f)))
-        else:
-            print "Duplicate: %s" % f
-    print
+            yield digest, filenames
 
 
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.strip())
+
+    dupe_mode = parser.add_mutually_exclusive_group()
+
+    dupe_mode.add_argument('--report',  action='store_true', default=True,
+                           help='Report duplicates')
+    dupe_mode.add_argument('--trash',  action='store_true', default=False,
+                           help='Move duplicates to the Trash')
+    dupe_mode.add_argument('--delete',  action='store_true', default=False,
+                           help='Delete files')
+
+    parser.add_argument('--verbose', action='store_true', default=False,
+                        help='Display progress information')
+    parser.add_argument('directories', nargs='+')
+
+    args = parser.parse_args()
+
+    trash_dir = os.path.expanduser("~/.Trash/")
+    if args.trash and not os.path.isdir(trash_dir):
+        raise RuntimeError('Expected to move duplicates to non-existent %s!' % trash_dir)
+
+    for digest, filenames in find_duplicates(args.directories):
+        # filenames = sorted(filenames, key=os.path.getmtime)
+        filenames = sorted(filenames, key=lambda i: 'iTunes Media' not in i)
+
+        print(hexlify(digest).decode('ascii'))
+        print('\tOriginal: %s' % filenames[0])
+
+        for f in filenames[1:]:
+            if args.delete:
+                print('\tDeleting: %s' % f)
+                os.remove(f)
+            elif args.trash:
+                print('\tTrashing: %s' % f)
+                shutil.move(f, os.path.join(trash_dir, os.path.basename(f)))
+            else:
+                print('\tDuplicate: %s' % f)
+
+        print()
+
+
+if __name__ == '__main__':
+    main()
