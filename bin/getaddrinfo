@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+# encoding: utf-8
+"""Unformatted DNS resolution for shell work
+
+EXAMPLES:
+
+Override DNS resolution for curl so you can test a replacement HTTPS server with SSL validation:
+
+    curl -I --resolve example.org:443:$(getaddrinfo --limit=1 staging.example.org) https://example.org/
+"""
+
+import argparse
+import socket
+import sys
+
+parser = argparse.ArgumentParser(description=__doc__.strip())
+
+family_group = parser.add_mutually_exclusive_group()
+family_group.add_argument('-4', '--only-ipv4', action='store_true', help='Restrict results to IPv4')
+family_group.add_argument('-6', '--only-ipv6', action='store_true', help='Restrict results to IPv6')
+
+parser.add_argument('--show-family', action='store_true',
+                    help='Print family (e.g. IPv4 or IPv6)')
+parser.add_argument('--show-hostname', action='store_true',
+                    help='Print the hostname before each result (handy when querying multiple hostnames)')
+
+parser.add_argument('--limit', type=int, default=0,
+                    help='Limit the number of results printed (default: no limit)')
+
+parser.add_argument('hostnames', nargs='+')
+args = parser.parse_args()
+
+if args.only_ipv4:
+    query_family = socket.AddressFamily.AF_INET
+elif args.only_ipv6:
+    query_family = socket.AddressFamily.AF_INET6
+else:
+    query_family = socket.AddressFamily.AF_UNSPEC
+
+for hostname in args.hostnames:
+    try:
+        results = socket.getaddrinfo(hostname, None, family=query_family)
+    except IOError as exc:
+        print('Unable to resolve %r: %s' % (hostname, exc), file=sys.stderr)
+        continue
+
+    for i, (family, socktype, proto, canonname, sockaddr) in enumerate(results, start=1):
+        vals = [sockaddr[0]]
+        if args.show_family:
+            vals.insert(0, family.name)
+        if args.show_hostname:
+            vals.insert(0, hostname)
+        print(*vals, sep="\t")
+
+        if args.limit and i >= args.limit:
+            raise SystemExit
