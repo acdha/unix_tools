@@ -1,21 +1,22 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/env python
+
+from __future__ import absolute_import, unicode_literals, print_function, division
 
 import os
-from os.path import dirname, join, exists, samefile, realpath, islink, isdir
 import sys
-import shutil
 from filecmp import cmp
-import subprocess
+from os.path import dirname, exists, isdir, join, realpath, samefile
+
 
 def create_home_links(source_dir, target_dir, f_prefix=""):
     if not os.path.exists(source_dir):
-        print >>sys.stderr, "Skipping non-existent source directory: %s" % source_dir
+        print("Skipping non-existent source directory: %s" % source_dir, file=sys.stderr)
         return
 
     target_dir = os.path.expanduser(target_dir)
 
     if not os.path.exists(target_dir):
-        print "Creating %s" % target_dir
+        print("Creating %s" % target_dir)
         os.mkdir(target_dir)
 
     for f in os.listdir(source_dir):
@@ -34,16 +35,16 @@ def create_home_links(source_dir, target_dir, f_prefix=""):
             if samefile(source_file, target_file):
                 continue
             elif cmp(source_file, target_file, shallow=False):
-                print >>sys.stderr, "Replacing identical file %s with %s" % (target_file, source_file)
+                print("Replacing identical file %s with %s" % (target_file, source_file), file=sys.stderr)
                 os.remove(target_file)
             else:
-                print >>sys.stderr, "Skipping %s: %s already exists" % (source_file, target_file)
+                print("Skipping %s: %s already exists" % (source_file, target_file), file=sys.stderr)
                 continue
 
         try:
             os.symlink(source_file, target_file)
-        except OSError, e:
-            print >>sys.stderr, "Unable to symlink %s to %s: %s" % (source_file, target_file, e)
+        except OSError as e:
+            print("Unable to symlink %s to %s: %s" % (source_file, target_file, e), file=sys.stderr)
             continue
 
 
