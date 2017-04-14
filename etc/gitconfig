@@ -58,6 +58,9 @@
 [diff "msgcat"]
     textconv = msgcat --no-location --sort-output
 
+[diff "xml2rfc"]
+    textconv = xml2rfc --quiet --out=/dev/stdout
+
 [branch]
 	autosetuprebase = always
 [push]
