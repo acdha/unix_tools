@@ -23,3 +23,7 @@ node_modules
 .static-media
 .tx
 .tox
+.settings
+.vscode
+jsconfig.json
+yarn.lock
