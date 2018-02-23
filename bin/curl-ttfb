@@ -1,21 +1,60 @@
-#!/bin/bash
-#
-# Report time to first byte for the provided URL using a cache buster to ensure
-# that we're measuring full cold-cache performance
+#!/usr/bin/env python3
+"""
+Report time to first byte for the provided URL using a cache buster to ensure
+that we're measuring full cold-cache performance by default
+"""
 
-set -e
+import argparse
+import random
+import subprocess
+import sys
+import time
 
-if [ "$1" == "--allow-cache" ]; then
-    shift;
-    CACHE_BUST=""
-else
-    CACHE_BUST="?`date +%s`"
-fi
+parser = argparse.ArgumentParser(description=__doc__.strip())
+parser.add_argument('--allow-caching', '--allow-cache', action='store_true',
+                    help="Don't attempt to defeat caching")
+parser.add_argument('urls', metavar='URL', nargs='+', help='One or more URLs to test')
+args = parser.parse_args()
 
-while (($#)); do
-    echo $1
-    curl -so /dev/null -H "Pragma: no-cache" -H "Cache-Control: no-cache" \
-        -w "%{http_code}\tPre-Transfer: %{time_pretransfer}\tStart Transfer: %{time_starttransfer}\tTotal: %{time_total}\tSize: %{size_download}\n" \
-        "$1${CACHE_BUST}"
-    shift
-done
+for url in args.urls:
+    print('Checking', url)
+
+    curl_args = [
+        'curl', '--fail', '-o', '/dev/null',
+        '-w',
+        '\\t'.join([
+            '%{http_code}',
+            'Pre-Transfer: %{time_pretransfer}',
+            'Start Transfer: %{time_starttransfer}',
+            'Total: %{time_total}',
+            'Size: %{size_download}',
+            '\\n'
+        ])
+    ]
+
+    if not args.allow_caching:
+        curl_args.extend([
+            "-H 'Pragma: no-cache'",
+            "-H 'Cache-Control: no-cache'"
+        ])
+        url = '%s?%s+%s' % (url, time.time(), random.random())
+
+    curl_args.append(url)
+
+    child = subprocess.Popen(curl_args, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, encoding=sys.getdefaultencoding())
+    rc = child.wait()
+    stdout, stderr = child.communicate()
+
+    if rc == 0:
+        print(stdout.strip())
+    else:
+        def format_output(stream):
+            lines = stream.splitlines()
+            return '\n'.join('\t%s' % i.strip() for i in lines)
+
+        print('curl returned %d for %s' % (rc, url), file=sys.stderr)
+        print('command:', ' '.join(curl_args),
+              'stdout:', format_output(stdout),
+              'stderr:', format_output(stderr),
+              sep='\n\n', file=sys.stderr)
