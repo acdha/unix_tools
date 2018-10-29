@@ -1,6 +1,7 @@
 [user]
 	email = chris@improbable.org
 	name = Chris Adams
+	signingkey = 4F67E839C4923CE9
 
 [core]
     excludesfile = ~/.gitignore
@@ -77,8 +78,13 @@
 [pull]
 	ff = true
 [filter "lfs"]
-	clean = git-lfs clean %f
-	smudge = git-lfs smudge %f
 	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
 [diff]
 	algorithm = patience
+[credential]
+	helper = osxkeychain
+[commit]
+	gpgSign = false

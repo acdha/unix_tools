@@ -3,3 +3,5 @@ export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 export DEBFULLNAME="Chris Adams"
 export DEBEMAIL="chris@improbable.org"
 export UBUMAIL=$DEBEMAIL
+
+export PATH="$HOME/.cargo/bin:$PATH"

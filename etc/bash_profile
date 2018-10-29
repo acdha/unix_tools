@@ -77,6 +77,14 @@ HISTTIMEFORMAT='%F %T '
 
 MANPATH=~/man:$MANPATH
 
+if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+fi
+
+if [ -f ~/.bashrc.local ]; then
+    . ~/.bashrc.local
+fi
+
 VIRTUALENV_WRAPPER=`which virtualenvwrapper.sh 2>/dev/null`
 if [ ! -z "$VIRTUALENV_WRAPPER" ]; then
     export WORKON_HOME="$HOME/.virtualenvs"
@@ -103,12 +111,6 @@ if [ -d ~/.bash_completion.d/ ]; then
 	done
 fi
 
-source ~/.bashrc
-
-if [ -f ~/.bashrc.local ]; then
-    . ~/.bashrc.local
-fi
-
 if [ -f ~/.pythonstartup ]; then
     export PYTHONSTARTUP=$HOME/.pythonstartup
 fi
@@ -123,3 +125,7 @@ if [ -d /usr/local/git ]; then
     export PATH=/usr/local/git/bin:$PATH
 fi
 
+
+export PATH="$HOME/.cargo/bin:$PATH"
+
+export GPG_TTY=$(tty)

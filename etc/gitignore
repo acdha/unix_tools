@@ -27,3 +27,5 @@ node_modules
 .vscode
 jsconfig.json
 yarn.lock
+target
+media

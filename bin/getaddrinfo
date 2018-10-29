@@ -12,6 +12,7 @@ Override DNS resolution for curl so you can test a replacement HTTPS server with
 import argparse
 import socket
 import sys
+from urllib.parse import urlparse
 
 parser = argparse.ArgumentParser(description=__doc__.strip())
 
@@ -57,6 +58,10 @@ else:
     query_family = socket.AddressFamily.AF_UNSPEC
 
 for hostname in args.hostnames:
+    if "://" in hostname:
+        parsed = urlparse(hostname)
+        hostname = parsed.netloc
+
     try:
         results = socket.getaddrinfo(hostname, None, family=query_family)
     except IOError as exc:
