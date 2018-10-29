@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Compare DNS records across multiple servers
 
 Usage:
@@ -9,12 +9,12 @@ You must specify at least one server and one record to check.
 The query type is assume to be A if it does not end with a colon-separated
 record type
 """
-
-from collections import defaultdict
-import socket
-import sys
+from __future__ import absolute_import, print_function
 
 import optparse
+import socket
+import sys
+from collections import defaultdict
 
 from dns import resolver
 from dns.resolver import NoAnswer
@@ -36,7 +36,7 @@ def get_records_from_server(server, records):
 
 
 def normalize_record(i):
-    if ':' in i:
+    if ":" in i:
         return i.split(":", 1)
     else:
         return i, "A"
@@ -49,9 +49,14 @@ def query_sort_key(qname, rdtype):
 
 def main():
     parser = optparse.OptionParser(__doc__.strip())
-    parser.add_option('--server', type="str", dest="servers", action="append",
-                      metavar="SERVER",
-                      help="hostname of the DNS server to check (repeatable)")
+    parser.add_option(
+        "--server",
+        type="str",
+        dest="servers",
+        action="append",
+        metavar="SERVER",
+        help="hostname of the DNS server to check (repeatable)",
+    )
 
     (options, records) = parser.parse_args()
 
@@ -64,18 +69,21 @@ def main():
     results = defaultdict(lambda: defaultdict(list))
 
     for server in options.servers:
-        print "Querying %s" % server
+        print("Querying %s" % server)
         for qname, rdtype, resp in get_records_from_server(server, records):
             results[qname, rdtype][server].append(resp)
-    print
+    print()
 
-    for query, responses in sorted(results.items(), key=lambda i: query_sort_key(*i[0])):
-        print "%s:%s" % query
+    for query, responses in sorted(
+        results.items(), key=lambda i: query_sort_key(*i[0])
+    ):
+        print("%s:%s" % query)
         for server, answers in sorted(responses.items(), key=lambda i: i[0]):
-            print "\t%s:" % server
+            print("\t%s:" % server)
             for answer in sorted(answers):
-                print "\t\t\t\t%s" % answer
-        print
+                print("\t\t\t\t%s" % answer)
+        print()
+
 
 if __name__ == "__main__":
     main()
