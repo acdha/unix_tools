@@ -11,50 +11,67 @@ import sys
 import time
 
 parser = argparse.ArgumentParser(description=__doc__.strip())
-parser.add_argument('--allow-caching', '--allow-cache', action='store_true',
-                    help="Don't attempt to defeat caching")
-parser.add_argument('urls', metavar='URL', nargs='+', help='One or more URLs to test')
+parser.add_argument(
+    "--allow-caching",
+    "--allow-cache",
+    action="store_true",
+    help="Don't attempt to defeat caching",
+)
+parser.add_argument("urls", metavar="URL", nargs="+", help="One or more URLs to test")
 args = parser.parse_args()
 
 for url in args.urls:
-    print('Checking', url)
+    print("Checking", url)
 
     curl_args = [
-        'curl', '--fail', '-o', '/dev/null',
-        '-w',
-        '\\t'.join([
-            '%{http_code}',
-            'Pre-Transfer: %{time_pretransfer}',
-            'Start Transfer: %{time_starttransfer}',
-            'Total: %{time_total}',
-            'Size: %{size_download}',
-            '\\n'
-        ])
+        "curl",
+        "--fail",
+        "-o",
+        "/dev/null",
+        "-w",
+        "\\t".join(
+            [
+                "%{http_code}",
+                "Pre-Transfer: %{time_pretransfer}",
+                "Start Transfer: %{time_starttransfer}",
+                "Total: %{time_total}",
+                "Size: %{size_download}",
+                "\\n",
+            ]
+        ),
     ]
 
     if not args.allow_caching:
-        curl_args.extend([
-            "-H 'Pragma: no-cache'",
-            "-H 'Cache-Control: no-cache'"
-        ])
-        url = '%s?%s+%s' % (url, time.time(), random.random())
+        curl_args.extend(["-H 'Pragma: no-cache'", "-H 'Cache-Control: no-cache'"])
+        url = "%s?%s+%s" % (url, time.time(), random.random())
 
     curl_args.append(url)
 
-    child = subprocess.Popen(curl_args, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, encoding=sys.getdefaultencoding())
+    child = subprocess.Popen(
+        curl_args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        encoding=sys.getdefaultencoding(),
+    )
     rc = child.wait()
     stdout, stderr = child.communicate()
 
     if rc == 0:
         print(stdout.strip())
     else:
+
         def format_output(stream):
             lines = stream.splitlines()
-            return '\n'.join('\t%s' % i.strip() for i in lines)
+            return "\n".join("\t%s" % i.strip() for i in lines)
 
-        print('curl returned %d for %s' % (rc, url), file=sys.stderr)
-        print('command:', ' '.join(curl_args),
-              'stdout:', format_output(stdout),
-              'stderr:', format_output(stderr),
-              sep='\n\n', file=sys.stderr)
+        print("curl returned %d for %s" % (rc, url), file=sys.stderr)
+        print(
+            "command:",
+            " ".join(curl_args),
+            "stdout:",
+            format_output(stdout),
+            "stderr:",
+            format_output(stderr),
+            sep="\n\n",
+            file=sys.stderr,
+        )

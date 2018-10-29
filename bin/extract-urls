@@ -10,7 +10,8 @@ import fileinput
 import re
 
 # Source: https://gist.github.com/gruber/8891611
-URL_RE = re.compile(r'''\b
+URL_RE = re.compile(
+    r"""\b
 (							# Capture 1: entire matched URL
   (?:
     https?:				# URL protocol and colon
@@ -52,7 +53,9 @@ URL_RE = re.compile(r'''\b
     (?!@)			# not succeeded by a @, avoid matching "foo.na" in "foo.na@example.com"
   )
 )
-''', flags=re.UNICODE | re.VERBOSE)
+""",
+    flags=re.UNICODE | re.VERBOSE,
+)
 
 for line in fileinput.input():
     matches = URL_RE.findall(line)
