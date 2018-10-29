@@ -24,8 +24,19 @@ parser.add_argument('--show-family', action='store_true',
 parser.add_argument('--show-hostname', action='store_true',
                     help='Print the hostname before each result (handy when querying multiple hostnames)')
 
-parser.add_argument('--limit', '-l', type=int, default=0,
-                    help='Limit the number of results printed (default: no limit)')
+parser.add_argument(
+    "--limit",
+    type=int,
+    default=0,
+    help="Limit the number of results printed (default: no limit)",
+)
+parser.add_argument(
+    "-1",
+    action="store_const",
+    const=1,
+    dest="limit",
+    help="Limit the number of results printed to one",
+)
 
 parser.add_argument('hostnames', nargs='+')
 args = parser.parse_args()
