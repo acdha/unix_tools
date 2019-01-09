@@ -3,4 +3,4 @@ syscall::flock:entry, syscall::flock:return
 {
    trace(pid);
    trace(execname);
-} 
+}

@@ -7,9 +7,9 @@ syscall::lstat64:entry,
 syscall::unlink:entry
 {
 	printf("%s[%d]: %s %s\n", execname, pid, probefunc, copyinstr(arg0));
-} 
+}
 
 syscall::rename:entry
 {
 	printf("%s[%d]: %s %s %s\n", execname, pid, probefunc, copyinstr(arg0), copyinstr(arg1));
-} 
+}

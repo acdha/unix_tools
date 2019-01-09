@@ -22,20 +22,20 @@ syscall::flock:entry
 / (arg1 & 1) || (arg1 & 2) /
 {
 	@locks[execname, pid, probefunc, arg1 & 1 ? "LOCK_SH" : "LOCK_EX", fds[arg0].fi_pathname ] = count();
-} 
+}
 
 syscall::fcntl:entry
 / (arg1 == 8) || (arg1 == 9)/
 {
 	/* F_SETLK / F_SETLKW */
 	@locks[execname, pid, probefunc, arg1 == 8 ? "F_SETLK" : "F_SETLKW", fds[arg0].fi_pathname ] = count();
-} 
+}
 
 syscall::open:entry
 / (arg1 & O_SHLOCK) || (arg1 & O_EXLOCK) /
 {
 	self->locktype = arg1
-} 
+}
 
 syscall::open:return
 / arg0 >= 0 /

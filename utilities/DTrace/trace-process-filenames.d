@@ -6,10 +6,10 @@ syscall::lstat:entry
 /execname == $$1/
 {
 	printf("%s[%d]: %s %s\n", execname, pid, probefunc, copyinstr(arg0));
-} 
+}
 
 syscall::rename:entry
 /execname == $$1/
 {
 	printf("%s[%d]: %s %s %s\n", execname, pid, probefunc, copyinstr(arg0), copyinstr(arg1));
-} 
+}

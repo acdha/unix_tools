@@ -1,22 +1,12 @@
-export CLICOLOR=1 
+#!/bin/bash
+
+export CLICOLOR=1
 export EDITOR=vim
 export LESS=FRSXQ
 
 export PATH=~/bin:/usr/local/sbin:/usr/local/bin:$PATH
 
-alias ab='echo -e "Use boom!\a" >&2; boom $@'
-
 alias jsonpretty='python -mjson.tool'
-
-alias pyflakes_tree='find . -name \*.py -exec pyflakes {} \;'
-
-vipm () { 
-	vim `perldoc -l $1 | sed -e 's/pod$/pm/'` 
-}
-
-pmversion () { 
-	perl -MUNIVERSAL::require -e "$1->require; print $1->VERSION\n" 
-}
 
 localtime () {
 	perl -e "print scalar localtime($1), \"\n\";"
@@ -28,8 +18,4 @@ clean_whitespace() {
     else
         perl -p -i -e "s|[ \t]+$||" $@
     fi
-}
-
-clean_pyc() {
-    find . $VIRTUAL_ENV -name \*.pyc -delete
 }
