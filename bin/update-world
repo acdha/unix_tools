@@ -11,8 +11,12 @@ import subprocess
 import sys
 
 GIT_UPDATE_COMMANDS = [["git", "fetch", "--all", "--prune"], ["git", "pull"]]
-NPM_UPDATE_COMMANDS = [["npm", "audit"], ["npm", "outdated"]]
-PIPFILE_COMMANDS = [["pipenv", "check"], ["pipenv", "update", "--dry-run"]]
+NPM_UPDATE_COMMANDS = [["npm", "install"], ["npm", "audit"], ["npm", "outdated"]]
+PIPFILE_COMMANDS = [
+    ["pipenv", "install", "--dev"],
+    ["pipenv", "check"],
+    ["pipenv", "update", "--dry-run"],
+]
 
 os.environ["PIPENV_NOSPIN"] = "1"
 os.environ["PIPENV_COLORBLIND"] = "1"
