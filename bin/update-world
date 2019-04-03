@@ -7,7 +7,7 @@ Currently supported: Git repositories, Python Pipfiles, and NPM packages
 
 import argparse
 import os
-import subprocess
+import subprocess  # nosec: all input is trusted
 import sys
 
 GIT_UPDATE_COMMANDS = [["git", "fetch", "--all", "--prune"], ["git", "pull"]]
@@ -34,7 +34,7 @@ def print_prefixed(text, stream, prefix):
 
 def run_command(cmd, *, cwd, verbose=False):
     try:
-        output = subprocess.check_output(
+        output = subprocess.check_output(  # nosec: all input is trusted
             cmd, cwd=cwd, stdin=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True
         )
         if verbose:
@@ -54,7 +54,7 @@ def crawl_directory(base_dir, *, verbose=False):
         cwd = os.path.join(base_dir, dirpath)
 
         if ".git" in dirnames:
-            print("Checking Git repository in", cwd)
+            print("Updating Git repository in", cwd)
             for cmd in GIT_UPDATE_COMMANDS:
                 run_command(cmd, cwd=cwd, verbose=verbose)
 
@@ -65,6 +65,19 @@ def crawl_directory(base_dir, *, verbose=False):
 
         if "Pipfile" in filenames:
             print("Checking Pipfile in", cwd)
+
+            try:
+                subprocess.check_call(  # nosec: all input is trusted
+                    ["pipenv", "run", "python", "--version"],
+                    stdin=subprocess.DEVNULL,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    cwd=cwd,
+                )
+            except subprocess.CalledProcessError:
+                print(f"\tRecreating virtualenv environment", flush=True)
+                run_command(["pipenv", "--rm"], cwd=cwd)
+
             for cmd in PIPFILE_COMMANDS:
                 run_command(cmd, cwd=cwd, verbose=verbose)
 
