@@ -8,3 +8,4 @@
 *.tsv diff=tsv
 bagit.xml diff=xml2rfc
 *.xml diff=xml-tidy
+*.svg -diff
