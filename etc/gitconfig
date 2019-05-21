@@ -44,11 +44,10 @@
     enabled = 1
 
 [diff "minified-css"]
-    textconv = cssbeautify
+    textconv = prettier --parser=css
 
 [diff "minified-js"]
-    # See https://github.com/einars/js-beautify
-    textconv = js-beautify
+    textconv = prettier --parser=babel
 
 [diff "xml-tidy"]
     textconv = xml-tidy
