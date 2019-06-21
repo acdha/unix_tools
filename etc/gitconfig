@@ -88,3 +88,5 @@
 	helper = osxkeychain
 [commit]
 	gpgSign = false
+[fetch]
+	prune = true
