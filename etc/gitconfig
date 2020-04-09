@@ -55,9 +55,11 @@
 
 [branch]
 	autosetuprebase = always
-	autosetupmerge = true
+	autosetupmerge = always
+
 [push]
 	default = current
+
 [diff "csv"]
 	wordRegex = [^,]
 [diff "tsv"]
