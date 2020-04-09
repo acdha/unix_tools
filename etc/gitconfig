@@ -82,6 +82,9 @@
 	helper = osxkeychain
 [commit]
 	gpgSign = false
+[init]
+	templateDir = $HOME/.local/git-template
+
 [remote "origin"]
 	prune = true
 [fetch]
