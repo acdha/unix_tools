@@ -13,11 +13,6 @@
 [merge]
     tool = diffmerge
 
-[mergetool "chdiff"]
-    cmd = /usr/bin/env chdiff --wait "$LOCAL" "$REMOTE"
-    keepBackup = false
-    trustExitCode = false
-
 [mergetool "diffmerge"]
     cmd = diffmerge --merge --result="$MERGED" "$LOCAL" "$BASE" "$REMOTE"
     trustExitCode = false
@@ -36,9 +31,6 @@
     lga = log --oneline --graph --decorate --abbrev-commit --date=relative --all
     mt = mergetool --no-prompt
 	diff = diff --word-diff=color
-
-[difftool "chdiff"]
-    cmd = /usr/bin/env chdiff --wait "$LOCAL" "$REMOTE"
 
 [rerere]
     enabled = 1
