@@ -88,6 +88,8 @@
 	helper = osxkeychain
 [commit]
 	gpgSign = false
+[remote "origin"]
+	prune = true
 [fetch]
 	prune = true
 	pruneTags = true
