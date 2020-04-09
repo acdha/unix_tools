@@ -90,3 +90,4 @@
 	gpgSign = false
 [fetch]
 	prune = true
+	pruneTags = true
