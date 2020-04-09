@@ -29,3 +29,6 @@ jsconfig.json
 yarn.lock
 target
 media
+.terraform/plugins
+*.tfstate*
+.terraform
