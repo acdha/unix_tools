@@ -11,12 +11,8 @@ import subprocess  # nosec: all input is trusted
 import sys
 
 GIT_UPDATE_COMMANDS = [["git", "fetch", "--all", "--prune"], ["git", "pull"]]
-NPM_UPDATE_COMMANDS = [["npm", "install"], ["npm", "audit"], ["npm", "outdated"]]
-PIPFILE_COMMANDS = [
-    ["pipenv", "install", "--dev"],
-    ["pipenv", "check"],
-    ["pipenv", "update", "--dry-run"],
-]
+NPM_UPDATE_COMMANDS = [["npm", "install"], ["npm", "audit", "fix"]]
+PIPFILE_COMMANDS = [["pipenv", "install", "--dev"], ["pipenv", "check"]]
 
 os.environ["PIPENV_NOSPIN"] = "1"
 os.environ["PIPENV_COLORBLIND"] = "1"
@@ -81,7 +77,7 @@ def crawl_directory(base_dir, *, verbose=False):
             for cmd in PIPFILE_COMMANDS:
                 run_command(cmd, cwd=cwd, verbose=verbose)
 
-        for ignore_dir in ("node_modules", ".git"):
+        for ignore_dir in ("node_modules", ".git", ".terraform"):
             if ignore_dir in dirnames:
                 dirnames.remove(ignore_dir)
 
