@@ -77,9 +77,12 @@ def crawl_directory(base_dir, *, verbose=False):
             for cmd in PIPFILE_COMMANDS:
                 run_command(cmd, cwd=cwd, verbose=verbose)
 
-        for ignore_dir in ("node_modules", ".git", ".terraform"):
+        for ignore_dir in ("node_modules",):
             if ignore_dir in dirnames:
                 dirnames.remove(ignore_dir)
+
+        for hidden_dir in [i for i in dirnames if i.startswith(".")]:
+            dirnames.remove(hidden_dir)
 
 
 if __name__ == "__main__":
