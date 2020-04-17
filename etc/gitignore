@@ -32,3 +32,4 @@ media
 .terraform/plugins
 *.tfstate*
 .terraform
+.envrc
