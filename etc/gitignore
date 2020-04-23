@@ -33,3 +33,4 @@ media
 *.tfstate*
 .terraform
 .envrc
+.scannerwork

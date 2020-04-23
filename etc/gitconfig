@@ -1,5 +1,5 @@
 [user]
-	email = chris@improbable.org
+	email = cadams@loc.gov
 	name = Chris Adams
 	signingkey = 4F67E839C4923CE9
 
@@ -87,6 +87,7 @@
 
 [remote "origin"]
 	prune = true
+
 [fetch]
 	prune = true
 	pruneTags = true

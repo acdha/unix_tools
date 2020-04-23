@@ -5,3 +5,5 @@ export DEBEMAIL="chris@improbable.org"
 export UBUMAIL=$DEBEMAIL
 
 export PATH="$HOME/.cargo/bin:$PATH"
+
+gam() { "/Users/cadams/bin/gam/gam" "$@" ; }
