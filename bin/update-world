@@ -59,6 +59,9 @@ def crawl_directory(base_dir, *, verbose=False):
             for cmd in NPM_UPDATE_COMMANDS:
                 run_command(cmd, cwd=cwd, verbose=verbose)
 
+        if ".pre-commit-config.yaml" in filenames:
+            run_command(["pre-commit", "install-hooks"], cwd=cwd, verbose=verbose)
+
         if "Pipfile" in filenames:
             print("Checking Pipfile in", cwd)
 
