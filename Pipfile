@@ -7,6 +7,15 @@ verify_ssl = true
 pylint = "*"
 flake8 = "*"
 pycodestyle = "*"
+isort = "*"
+black = "==19.10b0"
+bandit = "*"
+flake8-assertive = "*"
+flake8-builtins = "*"
+flake8-comprehensions = "*"
+flake8-logging-format = "*"
+flake8-eradicate = "*"
+flake8-bugbear = "*"
 
 [packages]
 
