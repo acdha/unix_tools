@@ -8,7 +8,7 @@
     attributesfile = ~/.gitattributes
 	autocrlf = input
 	precomposeunicode = true
-	pager = most
+	pager = "delta --dark --plus-color=black --minus-color=black --keep-plus-minus-markers"
 
 [merge]
     tool = diffmerge
@@ -76,8 +76,6 @@
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
-[diff]
-	algorithm = patience
 [credential]
 	helper = osxkeychain
 [commit]
@@ -91,3 +89,6 @@
 [fetch]
 	prune = true
 	pruneTags = true
+
+[interactive]
+	diffFilter = delta
