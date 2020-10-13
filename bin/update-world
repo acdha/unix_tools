@@ -11,7 +11,7 @@ import subprocess  # nosec: all input is trusted
 import sys
 
 GIT_UPDATE_COMMANDS = [["git", "fetch", "--all", "--prune"], ["git", "pull"]]
-NPM_UPDATE_COMMANDS = [["npm", "install"], ["npm", "audit", "fix"]]
+NPM_UPDATE_COMMANDS = [["npm", "install"]]
 PIPFILE_COMMANDS = [["pipenv", "install", "--dev"], ["pipenv", "check"]]
 
 os.environ["PIPENV_NOSPIN"] = "1"
