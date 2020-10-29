@@ -2,7 +2,6 @@
 *.tmproj
 *.swp
 .noseids
-.gitignore
 *.mo
 nbproject
 .idea
@@ -12,11 +11,8 @@ nbproject
 *.noindex
 *.sublime-*
 dev*settings*
-.tm_properties
-.noserc
 .arcconfig
 .arc
-htmlcov
 __pycache__
 tmp
 node_modules
@@ -26,11 +22,9 @@ node_modules
 .settings
 .vscode
 jsconfig.json
-yarn.lock
 target
-media
-.terraform/plugins
 *.tfstate*
 .terraform
 .envrc
 .scannerwork
+ENV
