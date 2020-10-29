@@ -69,8 +69,11 @@
 	keepBackup = false
 [rebase]
 	autosquash = true
+
 [pull]
 	ff = true
+	rebase = true
+
 [filter "lfs"]
 	required = true
 	clean = git-lfs clean -- %f
