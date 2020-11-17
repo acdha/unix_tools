@@ -56,15 +56,24 @@ unset color_prompt
 
 shopt -s checkwinsize
 
+<<<<<<< Updated upstream
 # Display matches for ambiguous patterns at first tab press
 bind "set show-all-if-ambiguous on"
 
+=======
+>>>>>>> Stashed changes
 # Perform file completion in a case insensitive fashion
 bind "set completion-ignore-case on"
 
 # Treat hyphens and underscores as equivalent
 bind "set completion-map-case on"
 
+<<<<<<< Updated upstream
+=======
+# Display matches for ambiguous patterns at first tab press
+bind "set show-all-if-ambiguous on"
+
+>>>>>>> Stashed changes
 shopt -s histappend
 shopt -s cmdhist
 

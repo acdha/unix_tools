@@ -1,95 +1,95 @@
 [user]
-	email = cadams@loc.gov
-	name = Chris Adams
-	signingkey = 4F67E839C4923CE9
+email = cadams@loc.gov
+name = Chris Adams
+signingkey = cadams@loc.gov
 
 [core]
-    excludesfile = ~/.gitignore
-    attributesfile = ~/.gitattributes
-	autocrlf = input
-	precomposeunicode = true
-	pager = "delta --dark --plus-color=black --minus-color=black --keep-plus-minus-markers"
+excludesfile = ~/.gitignore
+attributesfile = ~/.gitattributes
+autocrlf = input
+precomposeunicode = true
+pager = "delta --dark --plus-color=black --minus-color=black --keep-plus-minus-markers"
 
 [merge]
-    tool = diffmerge
+tool = diffmerge
 
 [mergetool "diffmerge"]
-    cmd = diffmerge --merge --result="$MERGED" "$LOCAL" "$BASE" "$REMOTE"
-    trustExitCode = false
+cmd = diffmerge --merge --result="$MERGED" "$LOCAL" "$BASE" "$REMOTE"
+trustExitCode = false
 
 [github]
-	user = acdha
-    password = !security find-internet-password -a acdha -gs https://github.com -w | tr -d '\n'
+user = acdha
+password = !security find-internet-password -a acdha -gs https://github.com -w | tr -d '\n'
 
 [color]
-    branch = true
-    diff = true
-    status = true
+branch = true
+diff = true
+status = true
 
 [alias]
-    lg = log --oneline --graph --decorate --abbrev-commit --date=relative
-    lga = log --oneline --graph --decorate --abbrev-commit --date=relative --all
-    mt = mergetool --no-prompt
-	diff = diff --word-diff=color
+lg = log --oneline --graph --decorate --abbrev-commit --date=relative
+lga = log --oneline --graph --decorate --abbrev-commit --date=relative --all
+mt = mergetool --no-prompt
+diff = diff --word-diff=color
 
 [rerere]
-    enabled = 1
+enabled = 1
 
 [diff "minified-css"]
-    textconv = prettier --parser=css
+textconv = prettier --parser=css
 
 [diff "minified-js"]
-    textconv = prettier --parser=babel
+textconv = prettier --parser=babel
 
 [diff "xml-tidy"]
-    textconv = xml-tidy
+textconv = xml-tidy
 
 [diff "jsonpretty"]
-    textconv = python -mjson.tool
+textconv = python -mjson.tool
 
 [diff "msgcat"]
-    textconv = msgcat --no-location --sort-output
+textconv = msgcat --no-location --sort-output
 
 [diff "xml2rfc"]
-    textconv = xml2rfc --quiet --out=/dev/stdout
+textconv = xml2rfc --quiet --out=/dev/stdout
 
 [branch]
-	autosetuprebase = always
-	autosetupmerge = always
+autosetuprebase = always
+autosetupmerge = always
 
 [push]
-	default = current
+default = current
 
 [diff "csv"]
-	wordRegex = [^,]
+wordRegex = [^,]
 [diff "tsv"]
-	wordRegex = [^\t]
+wordRegex = [^\t]
 
 [mergetool]
-	keepBackup = false
+keepBackup = false
 [rebase]
-	autosquash = true
+autosquash = true
 
 [pull]
-	ff = true
-	rebase = true
+ff = true
+rebase = true
 
 [filter "lfs"]
-	required = true
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
+required = true
+clean = git-lfs clean -- %f
+smudge = git-lfs smudge -- %f
+process = git-lfs filter-process
 [credential]
-	helper = osxkeychain
+helper = osxkeychain
 [commit]
-	gpgSign = false
+gpgSign = false
 
 [init]
-	templateDir = ~/.local/git-template
+templateDir = ~/.local/git-template
 
 [fetch]
-	prune = true
-	pruneTags = true
+prune = true
+pruneTags = true
 
 [interactive]
-	diffFilter = delta
+diffFilter = delta

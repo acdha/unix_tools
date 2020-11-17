@@ -1,9 +1,13 @@
 *.css diff=css
 *.css.map -diff
+<<<<<<< Updated upstream
 *.csv diff=csv
 *.go diff=golang
 *.html diff=html
 *.js.map -diff
+=======
+# *.xml diff=xml-tidy
+>>>>>>> Stashed changes
 *.json diff=jsonpretty
 *.md diff=markdown
 *.min.css -diff
@@ -17,5 +21,8 @@
 *.rs diff=rust
 *.svg -diff
 *.tsv diff=tsv
+<<<<<<< Updated upstream
 *.xml diff=xml-tidy
+=======
+>>>>>>> Stashed changes
 bagit.xml diff=xml2rfc
