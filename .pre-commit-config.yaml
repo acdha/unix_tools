@@ -1,14 +1,14 @@
 repos:
     - repo: https://github.com/pre-commit/mirrors-isort
-      rev: v5.6.4
+      rev: v5.8.0
       hooks:
           - id: isort
     - repo: https://github.com/psf/black
-      rev: 20.8b1
+      rev: 21.4b0
       hooks:
           - id: black
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v3.3.0
+      rev: v3.4.0
       hooks:
           - id: check-byte-order-marker
           - id: check-json
@@ -20,11 +20,11 @@ repos:
             args: ["--fix=lf"]
           - id: trailing-whitespace
     - repo: https://github.com/pre-commit/mirrors-prettier
-      rev: v2.1.2
+      rev: v2.2.1
       hooks:
           - id: prettier
             files: .*[.](md|yml|yaml|js)
     - repo: https://gitlab.com/pycqa/flake8
-      rev: 3.8.4
+      rev: 3.9.1
       hooks:
           - id: flake8
