@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from urllib.parse import quote
 import sys
+from urllib.parse import quote
 
 for filename in sys.argv[1:]:
     print(filename)

@@ -4,17 +4,31 @@ repos:
       hooks:
           - id: isort
     - repo: https://github.com/psf/black
-      rev: 21.4b0
+      rev: 21.4b1
       hooks:
           - id: black
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v3.4.0
       hooks:
+          - id: check-added-large-files
+            args: ["--maxkb=128"]
+          - id: check-ast
           - id: check-byte-order-marker
+          - id: check-case-conflict
+          - id: check-docstring-first
+          - id: check-executables-have-shebangs
           - id: check-json
           - id: check-merge-conflict
+          - id: check-symlinks
+          - id: check-xml
           - id: check-yaml
+          - id: debug-statements
+          - id: detect-aws-credentials
+            args: ["--allow-missing-credentials"]
           - id: detect-private-key
+          - id: end-of-file-fixer
+          - id: mixed-line-ending
+            args: ["--fix=lf"]
           - id: pretty-format-json
             args: ["--autofix", "--no-sort-keys", "--indent=4"]
           - id: mixed-line-ending
@@ -29,3 +43,15 @@ repos:
       rev: 3.9.1
       hooks:
           - id: flake8
+            args: [--config=python/setup.cfg]
+            additional_dependencies:
+                - flake8-assertive
+                - flake8-builtins
+                - flake8-comprehensions
+                - flake8-logging-format
+                - flake8-eradicate
+                - flake8-bugbear
+    - repo: https://github.com/gruntwork-io/pre-commit
+      rev: v0.1.12
+      hooks:
+          - id: shellcheck

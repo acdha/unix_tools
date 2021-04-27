@@ -2,11 +2,11 @@
 # encoding: utf-8
 from __future__ import print_function, unicode_literals
 
-from unicodedata import category, name, normalize
-from binascii import hexlify
 import fileinput
 import os
 import sys
+from binascii import hexlify
+from unicodedata import category, name, normalize
 
 MAJOR_VERSION = sys.version_info[0]
 
