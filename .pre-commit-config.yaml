@@ -1,14 +1,14 @@
 repos:
     - repo: https://github.com/pre-commit/mirrors-isort
-      rev: v5.8.0
+      rev: v5.9.3
       hooks:
           - id: isort
     - repo: https://github.com/psf/black
-      rev: 21.4b1
+      rev: 21.11b1
       hooks:
           - id: black
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v3.4.0
+      rev: v4.0.1
       hooks:
           - id: check-added-large-files
             args: ["--maxkb=128"]
@@ -35,12 +35,12 @@ repos:
             args: ["--fix=lf"]
           - id: trailing-whitespace
     - repo: https://github.com/pre-commit/mirrors-prettier
-      rev: v2.2.1
+      rev: v2.4.1
       hooks:
           - id: prettier
             files: .*[.](md|yml|yaml|js)
     - repo: https://gitlab.com/pycqa/flake8
-      rev: 3.9.1
+      rev: 3.9.2
       hooks:
           - id: flake8
             args: [--config=python/setup.cfg]
@@ -52,6 +52,6 @@ repos:
                 - flake8-eradicate
                 - flake8-bugbear
     - repo: https://github.com/gruntwork-io/pre-commit
-      rev: v0.1.12
+      rev: v0.1.17
       hooks:
           - id: shellcheck
