@@ -8,10 +8,9 @@ excludesfile = ~/.gitignore
 attributesfile = ~/.gitattributes
 autocrlf = input
 precomposeunicode = true
-pager = "delta --dark --plus-color=black --minus-color=black --keep-plus-minus-markers"
 
 [merge]
-tool = diffmerge
+tool = Kaleidoscope
 
 [mergetool "diffmerge"]
 cmd = diffmerge --merge --result="$MERGED" "$LOCAL" "$BASE" "$REMOTE"
@@ -30,7 +29,6 @@ status = true
 lg = log --oneline --graph --decorate --abbrev-commit --date=relative
 lga = log --oneline --graph --decorate --abbrev-commit --date=relative --all
 mt = mergetool --no-prompt
-diff = diff --word-diff=color
 
 [rerere]
 enabled = 1
@@ -45,7 +43,7 @@ textconv = prettier --parser=babel
 textconv = xml-tidy
 
 [diff "jsonpretty"]
-textconv = python -mjson.tool
+textconv = python3 -mjson.tool
 
 [diff "msgcat"]
 textconv = msgcat --no-location --sort-output
@@ -67,6 +65,8 @@ wordRegex = [^\t]
 
 [mergetool]
 keepBackup = false
+prompt = false
+
 [rebase]
 autosquash = true
 
@@ -86,6 +86,7 @@ gpgSign = false
 
 [init]
 templateDir = ~/.local/git-template
+defaultBranch = development
 
 [fetch]
 prune = true
@@ -93,3 +94,17 @@ pruneTags = true
 
 [interactive]
 diffFilter = delta
+
+[diff]
+external = difft
+tool = Kaleidoscope
+
+[difftool "Kaleidoscope"]
+cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+
+[difftool]
+prompt = false
+
+[mergetool "Kaleidoscope"]
+cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+trustExitCode = true
