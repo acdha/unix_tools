@@ -15,7 +15,7 @@ NPM_UPDATE_COMMANDS = [["npm", "install"]]
 PIPFILE_COMMANDS = [["pipenv", "install", "--dev"], ["pipenv", "check"]]
 
 os.environ["PIPENV_NOSPIN"] = "1"
-os.environ["PIPENV_COLORBLIND"] = "1"
+os.environ["NO_COLOR"] = "1"
 
 
 def print_prefixed(text, stream, prefix):
