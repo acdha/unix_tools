@@ -29,6 +29,7 @@ status = true
 lg = log --oneline --graph --decorate --abbrev-commit --date=relative
 lga = log --oneline --graph --decorate --abbrev-commit --date=relative --all
 mt = mergetool --no-prompt
+remove-gone = !git for-each-ref --format '%(refname:short) %(upstream:track)' | grep -F '[gone]' | cut -f1 -d' ' | xargs -r git branch -D
 
 [rerere]
 enabled = 1
