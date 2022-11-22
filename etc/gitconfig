@@ -80,8 +80,10 @@ required = true
 clean = git-lfs clean -- %f
 smudge = git-lfs smudge -- %f
 process = git-lfs filter-process
+
 [credential]
 helper = osxkeychain
+
 [commit]
 gpgSign = false
 
@@ -105,6 +107,7 @@ cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$RE
 
 [difftool]
 prompt = false
+trustExitCode = true
 
 [mergetool "Kaleidoscope"]
 cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
