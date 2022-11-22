@@ -5,22 +5,22 @@
 # email to support and record a history file to avoid sending a notice about
 # the same version.
 
-if [ `uname -s` != "Linux" ]; then
-	echo .kernel-versions only supports Linux
-	exit 1
+if [ "$(uname -s)" != "Linux" ]; then
+    echo .kernel-versions only supports Linux
+    exit 1
 fi
 
-RUNNING=`uname -r | cut -f1-2 -d-`
-INSTALLED="`ls -1t /boot/vmlinuz* | head -1 | cut -f 2-3 -d-`"
-HISTORYFILE="$HOME/.kernel-versions/most-recent-kernel-`hostname -s`"
+RUNNING=$(uname -r | cut -f1-2 -d-)
+INSTALLED="$(find /boot -type f -name "vmlinuz*" | head -1 | cut -f 2-3 -d-)"
+HISTORYFILE="$HOME/.kernel-versions/most-recent-kernel-$(hostname -s)"
 
-if [ ! -d $HOME/.kernel-versions ]; then
-	mkdir $HOME/.kernel-versions
+if [ ! -d "$HOME/.kernel-versions" ]; then
+    mkdir "$HOME/.kernel-versions"
 fi
 
-if [ $RUNNING != $INSTALLED ]; then
-	if [ ! -f $HISTORYFILE -o "`test -f $HISTORYFILE && cat $HISTORYFILE`" !=  $INSTALLED ]; then
-		echo "`hostname --fqdn` needs a reboot: kernel $RUNNING is running but the latest version in /boot is $INSTALLED" | tee >( mail -s "`hostname --fqdn` requires a reboot" root )
-		echo $INSTALLED > $HISTORYFILE
-	fi
+if [ "$RUNNING" != "$INSTALLED" ]; then
+    if [ ! -f "$HISTORYFILE" ] || [ "$(test -f "$HISTORYFILE" && cat "$HISTORYFILE")" != "$INSTALLED" ]; then
+        echo "$(hostname --fqdn) needs a reboot: kernel $RUNNING is running but the latest version in /boot is $INSTALLED" | tee >(mail -s "$(hostname --fqdn) requires a reboot" root)
+        echo "$INSTALLED" >"$HISTORYFILE"
+    fi
 fi

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 if [ -z "$1" ]; then
-	echo Usage: $0 file.pdf
-	exit 1
+    echo Usage: "$0" file.pdf
+    exit 1
 fi
 
 java -classpath ~/Applications/Multivalent20040415.jar tool.pdf.Decrypt -inplace "$1"
