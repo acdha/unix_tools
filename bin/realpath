@@ -1,7 +1,5 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#!/usr/bin/env python3
 
-from __future__ import absolute_import, print_function, unicode_literals
 
 import os.path
 import sys
@@ -12,5 +10,5 @@ if len(sys.argv) <= 1:
 for p in sys.argv[1:]:
     try:
         print(os.path.realpath(p))
-    except (OSError, IOError) as e:
-        print("Unable to process path %s: %s" % (p, e), file=sys.stderr)
+    except OSError as e:
+        print(f"Unable to process path {p}: {e}", file=sys.stderr)

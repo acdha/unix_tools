@@ -43,7 +43,7 @@ for url in args.urls:
 
     if not args.allow_caching:
         curl_args.extend(["-H 'Pragma: no-cache'", "-H 'Cache-Control: no-cache'"])
-        url = "%s?%s+%s" % (url, time.time(), random.random())
+        url = f"{url}?{time.time()}+{random.random()}"
 
     curl_args.append(url)
 

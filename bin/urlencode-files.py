@@ -5,6 +5,6 @@ from urllib.parse import quote
 
 for filename in sys.argv[1:]:
     print(filename)
-    with open(filename, "r", encoding="utf-8") as f:
+    with open(filename, encoding="utf-8") as f:
         print(quote(f.read()))
     print()

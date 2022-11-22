@@ -9,7 +9,6 @@ You must specify at least one server and one record to check.
 The query type is assume to be A if it does not end with a colon-separated
 record type
 """
-from __future__ import absolute_import, print_function
 
 import optparse
 import socket

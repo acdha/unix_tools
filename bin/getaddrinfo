@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# encoding: utf-8
 """Unformatted DNS resolution for shell work
 
 EXAMPLES:
@@ -64,8 +63,8 @@ for hostname in args.hostnames:
 
     try:
         results = socket.getaddrinfo(hostname, None, family=query_family)
-    except IOError as exc:
-        print("Unable to resolve %r: %s" % (hostname, exc), file=sys.stderr)
+    except OSError as exc:
+        print(f"Unable to resolve {hostname!r}: {exc}", file=sys.stderr)
         continue
 
     for i, (family, socktype, proto, canonname, sockaddr) in enumerate(

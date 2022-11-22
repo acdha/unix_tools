@@ -4,7 +4,6 @@
 Converts stdin or a list of filenames on the command-line. Files will be edited
 *IN PLACE*
 """
-from __future__ import absolute_import, print_function
 
 import fileinput
 import unicodedata
