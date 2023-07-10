@@ -61,7 +61,6 @@ def find_duplicates(directories):
         for filename, digest in tqdm(
             executor.map(get_file_hash, all_files), total=len(all_files)
         ):
-
             file_hashes[digest].add(filename)
 
     for digest, filenames in file_hashes.items():
