@@ -3,7 +3,6 @@
 Look for URLs in stdin or files specified on the command-line and prints each URL to stdout on its own line
 """
 
-
 import fileinput
 import re
 

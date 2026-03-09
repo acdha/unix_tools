@@ -57,7 +57,7 @@ def main():
         help="hostname of the DNS server to check (repeatable)",
     )
 
-    (options, records) = parser.parse_args()
+    options, records = parser.parse_args()
 
     if not records or not options.servers:
         parser.print_usage()
