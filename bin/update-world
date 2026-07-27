@@ -74,7 +74,7 @@ def crawl_directory(base_dir, *, verbose=False):
                     cwd=cwd,
                 )
             except subprocess.CalledProcessError:
-                print(f"\tRecreating virtualenv environment", flush=True)
+                print("\tRecreating virtualenv environment", flush=True)
                 run_command(["pipenv", "--rm"], cwd=cwd)
 
             for cmd in PIPFILE_COMMANDS:
