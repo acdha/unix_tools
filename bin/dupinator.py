@@ -1,4 +1,10 @@
-#! /usr/bin/env python3
+#! /usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#     "tqdm>=4.69.0",
+# ]
+# ///
 """
 Scan the provided directories on the command-line and report duplicate files, optionally removing them
 """
@@ -26,7 +32,7 @@ def get_file_hash(filename):
     if not os.path.isfile(filename):
         raise ValueError("Expected %s to be a normal file" % filename)
 
-    h = hashlib.sha512()
+    h = hashlib.sha256()
 
     with open(filename, "rb") as f:
         while True:
